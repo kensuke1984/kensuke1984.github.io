@@ -52,17 +52,11 @@ jar {
 		attributes "Main-Class" : "kibrary.About"
 	}
 	from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	
+
 }
 
-// Gralde標準外のソースパスを追加
-sourceSets {
-  main {
-	java { srcDir 'src/Kibrary-master/manhattan' }
-	java { srcDir 'src/Kibrary-master/mathtool' }
-  }
-}
- 
+
+
 task copyDocs(type: Copy) {
 	from 'src/Kibrary-master/src'
 	into 'src/main/resources'
@@ -80,12 +74,19 @@ task downloadAndUnzipFile(dependsOn: downloadZipFile, type: Copy) {
 	into 'src'
 }
 
-task wrapper(type: Wrapper) {
-	gradleVersion = '2.10'
+task wrapper(type: Wrapper) { gradleVersion = '2.10' }
+
+// Gralde標準外のソースパスを追加
+sourceSets {
+	main {
+		java { srcDir 'src/Kibrary-master/manhattan'}
+		java { srcDir 'src/Kibrary-master/mathtool' }
+		if (!new File('src/Kibrary-master').exists()){
+			tasks.downloadZipFile.execute()
+			tasks.downloadAndUnzipFile.execute()
+			tasks.copyDocs.execute()
+		}
+	}
 }
 
-compileJava.doFirst{
-	tasks.downloadZipFile.execute()
-	tasks.downloadAndUnzipFile.execute()
-	tasks.copyDocs.execute()
-}
+clean { delete 'src/Kibrary-master' }
