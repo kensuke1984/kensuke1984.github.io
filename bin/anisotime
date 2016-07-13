@@ -7,7 +7,6 @@ fi
 KIBRARYHOME="$HOME/.Kibrary"
 
 kibrary=$KIBRARYHOME/bin/$(ls $KIBRARYHOME/bin/kib*jar | xargs -i basename {} )
-echo $kibrary
 
 javaCheck > /dev/null
 
