@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z "${JAVA}" ] ; then
+JAVA=java 
+fi
+
+KIBRARYHOME="$HOME/.Kibrary"
+
+kibrary=$KIBRARYHOME/bin/$(ls $KIBRARYHOME/bin/kib*jar | xargs -i basename {} )
+echo $kibrary
+
+javaCheck > /dev/null
+
+if [ $? -ne 0 ]; then
+javaCheck 
+exit 1
+fi
+
+$JAVA -cp $kibrary io.github.kensuke1984.anisotime.ANISOtime $@
+
+
