@@ -24,7 +24,13 @@ from="build/libs"
 
 file=$(ls $from/kibrary*jar | sed "s/build\/libs\///")
 mv $from/$file $binDir
-mv javaCheck anisotime $binDir
+
+#bin
+wget -P $binDir http://kensuke1984.github.io/bin/javaCheck && chmod +x $binDir/javaCheck
+wget -P $binDir http://kensuke1984.github.io/bin/anisotime $binDir/anisotime
+wget -P $binDir http://kensuke1984.github.io/bin/javaCheck.jar && $binDir/javaCheck.jar
+
+
 
 #bash
 cat <<EOF > $binDir/init_bash.sh
@@ -44,6 +50,8 @@ endif
 setenv PATH \${PATH}:$binDir
 exit 0
 EOF
+
+source $binDir/init_bash.sh 2> /dev/null || source $binDir/init_tcsh.sh 2> /dev/null
 
 exit 0
 
