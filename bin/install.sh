@@ -27,8 +27,8 @@ mv $from/$file $binDir
 
 #bin
 wget -P $binDir http://kensuke1984.github.io/bin/javaCheck && chmod +x $binDir/javaCheck
-wget -P $binDir http://kensuke1984.github.io/bin/anisotime $binDir/anisotime
-wget -P $binDir http://kensuke1984.github.io/bin/javaCheck.jar && $binDir/javaCheck.jar
+wget -P $binDir http://kensuke1984.github.io/bin/anisotime && chmod +x $binDir/anisotime
+wget -P $binDir http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x $binDir/javaCheck.jar
 
 
 
@@ -53,7 +53,7 @@ EOF
 
 source $binDir/init_bash.sh 2> /dev/null || source $binDir/init_tcsh.sh 2> /dev/null
 
-exit 0
+#exit 0
 
 
 
