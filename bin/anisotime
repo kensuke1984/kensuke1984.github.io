@@ -5,13 +5,13 @@ JAVA=java
 fi
 
 KIBRARYHOME="$HOME/.Kibrary"
+kibin="$KIBRARYHOME/bin"
+kibrary=$kibin/$(ls $kibin/kib*jar | xargs -i basename {} )
 
-kibrary=$KIBRARYHOME/bin/$(ls $KIBRARYHOME/bin/kib*jar | xargs -i basename {} )
-
-javaCheck > /dev/null
+$kibin/javaCheck > /dev/null
 
 if [ $? -ne 0 ]; then
-javaCheck 
+$kibin/javaCheck 
 exit 1
 fi
 
