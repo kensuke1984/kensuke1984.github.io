@@ -4,17 +4,17 @@ if [ -z "${JAVA}" ] ; then
 JAVA=java 
 fi
 
-KIBRARYHOME="$HOME/.Kibrary"
-kibin="$KIBRARYHOME/bin"
-kibrary=$kibin/$(ls $kibin/kib*jar | xargs -i basename {} )
+readonly KIBRARY_DIR="$HOME/.Kibrary"
+readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
+readonly kibrary=$KIBRARY_BIN/$(ls $KIBRARY_BIN/kib*jar | xargs -i basename {} )
 
-$kibin/javaCheck > /dev/null
+$KIBRARY_BIN/javaCheck > /dev/null
 
 if [ $? -ne 0 ]; then
-$kibin/javaCheck 
+$KIBRARY_BIN/javaCheck 
 exit 1
 fi
 
 $JAVA -cp $kibrary io.github.kensuke1984.anisotime.ANISOtime $@
 
-
+exit $?

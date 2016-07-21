@@ -1,22 +1,30 @@
 #!/bin/bash
 
+function print_get_java(){
+  echo "Get the latest Java from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html)."
+  return
+}
+
 if [ -z "${JAVA}" ] ; then
 JAVA=java 
 fi
 
-versionlines=`$JAVA -version 2> \
->(grep 'java version' | awk '{print $0}')`
-version=`tr -d "\"[:alpha:]"  <<<$versionlines`
-echo Your Java version is $version
+latest_version=\
+$(curl -s http://java.com/en/download/installed8.jsp | grep 'latest8' |sed s/.*=\\s//|tr -d "';")
+
+version_line=$($JAVA -version 2> >(grep 'java version'))
+version=$(tr -d "[:alpha:]\"" <<< $version_line)
+echo Java version in PATH is $version
 if [ $(echo $version | grep -e '1.8') ]; then
-    echo "Yes, we can do ANISOtime."
-    exit 0
+  echo "Yes, we can run ANISOtime."
+  if [ $version != $latest_version ]; then
+    echo -e "\e[4m"However"\e[m", its version"\e[1;31m"$version"\e[m" may not be the latest "\e[1;31m"$latest_version"\e[m"
+    print_get_java
+  fi
+  exit 0
 else
-    echo "It cannot run ANISOtime."
-echo "Get the latest Java from Oracle."
-echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
-exit 1
+  echo "It cannot run ANISOtime."
+  print_get_java
+  exit 1
 fi
-
-
 
