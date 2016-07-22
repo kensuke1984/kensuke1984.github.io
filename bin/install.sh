@@ -19,13 +19,13 @@ if [ ! -e $KIBRARY_DIR ]; then
   mkdir -p $KIBRARY_BIN
   if [ $? -ne 0 ]; then
     echo "Could not create $installDir"
-    return 2> /dev/null
+    return 2>/dev/null
     exit 1 
   fi
 else
   echo -e "$KIBRARY_DIR already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below"
   echo  "/bin/bash <(curl http://kensuke1984.github.io/bin/install.sh) -f"
-  return 2> /dev/null
+  return 2>/dev/null
   exit 2
 fi
 
@@ -39,7 +39,7 @@ wget -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x 
 
 $KIBRARY_BIN/javaCheck 
 if [ $? -ne 0 ]; then
-  return 2> /dev/null
+  return 2>/dev/null
   exit 1
 fi
 
@@ -64,15 +64,20 @@ EOF
 #tcsh
 cat <<EOF >$KIBRARY_BIN/init_tcsh.sh
 ##classpath
+set opt_set = \$?nonomatch
+set nonomatch
 if ! \$?CLASSPATH then
   setenv CLASSPATH $KIBRARY
 else
   setenv CLASSPATH \${CLASSPATH}:$KIBRARY
 endif
 setenv PATH \${PATH}:$KIBRARY_BIN
+if (\$opt_set == 0) then
+  unset nonomatch
+endif
 EOF
 
-echo Copy and paste it.
+echo Copy and paste it to setup PATH and CLASSPATH.
 
 if echo $SHELL | grep -qE 'bash|zsh' ; then
   echo source $KIBRARY_BIN/init_bash.sh
