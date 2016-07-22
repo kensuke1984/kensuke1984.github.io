@@ -17,7 +17,7 @@ version=$(tr -d "[:alpha:]\"" <<< $version_line)
 echo Java version in PATH is $version
 if [ $(echo $version | grep -e '1.8') ]; then
   echo "Yes, we can run ANISOtime."
-  if [ $version != $latest_version ]; then
+  if [ "$version" != "$latest_version" ]; then
     echo -e "\e[4m"However"\e[m", its version"\e[1;31m"$version"\e[m" may not be the latest "\e[1;31m"$latest_version"\e[m"
     print_get_java
   fi
