@@ -65,14 +65,22 @@ EOF
 cat <<EOF >$KIBRARY_BIN/init_tcsh.sh
 ##classpath
 if ! \$?CLASSPATH then
-    setenv CLASSPATH $KIBRARY
+  setenv CLASSPATH $KIBRARY
 else
-setenv CLASSPATH \${CLASSPATH}:$KIBRARY
+  setenv CLASSPATH \${CLASSPATH}:$KIBRARY
 endif
 setenv PATH \${PATH}:$KIBRARY_BIN
 EOF
 
-echo Please run $KIBRARY_BIN/init_bash.sh or $KIBRARY_BIN/init_tcsh.sh to add Kibrary in PATH.
+echo Copy and paste it.
+
+if echo $SHELL | grep -qE 'bash|zsh' ; then
+  source $KIBRARY_BIN/init_bash.sh
+elif echo $SHELL | grep -qE 'tcsh' ; then
+  source $KIBRARY_BIN/init_tcsh.sh 
+else
+  echo Please add $KIBRARY_BIN in PATH.
+fi
 #source $KIBRARY_BIN/init_bash.sh 2>/dev/null || source $KIBRARY_BIN/init_tcsh.sh 2>/dev/null
 #return 2> /dev/null
 exit 0
