@@ -23,7 +23,7 @@ if [ ! -e $KIBRARY_DIR ]; then
     exit 1 
   fi
 else
-  echo  "$KIBRARY_DIR already exists. If you want to do a clean install, please add an option -f as below"
+  echo -e "$KIBRARY_DIR already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below"
   echo  "/bin/bash <(curl http://kensuke1984.github.io/bin/install.sh) -f"
   return 2> /dev/null
   exit 2
@@ -75,9 +75,9 @@ EOF
 echo Copy and paste it.
 
 if echo $SHELL | grep -qE 'bash|zsh' ; then
-  source $KIBRARY_BIN/init_bash.sh
+  echo source $KIBRARY_BIN/init_bash.sh
 elif echo $SHELL | grep -qE 'tcsh' ; then
-  source $KIBRARY_BIN/init_tcsh.sh 
+  echo source $KIBRARY_BIN/init_tcsh.sh 
 else
   echo Please add $KIBRARY_BIN in PATH.
 fi
