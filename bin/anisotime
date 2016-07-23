@@ -6,7 +6,7 @@ fi
 
 readonly KIBRARY_DIR="$HOME/.Kibrary"
 readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
-readonly kibrary=$KIBRARY_BIN/$(ls $KIBRARY_BIN/kib*jar | xargs -i basename {} )
+readonly kibrary=$(ls $KIBRARY_BIN/kibrary*jar)
 
 $KIBRARY_BIN/javaCheck > /dev/null
 
