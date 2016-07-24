@@ -10,15 +10,15 @@ JAVA=java
 fi
 
 latest_version=\
-$(curl -s http://java.com/en/download/installed8.jsp | grep 'latest8' |sed s/.*=\\s//|tr -d "';")
+$(curl -s http://java.com/en/download/installed8.jsp | grep 'latest8' |sed 's/.*= //' |tr -d "';")
 
 version_line=$($JAVA -version 2> >(grep 'java version'))
 version=$(tr -d "[:alpha:]\"" <<< $version_line)
 echo Java version in PATH is $version
 if [ $(echo $version | grep -e '1.8') ]; then
   echo "Yes, we can run ANISOtime."
-  if [ "$version" != "$latest_version" ]; then
-    echo -e "\e[4m"However"\e[m", its version"\e[1;31m"$version"\e[m" may not be the latest "\e[1;31m"$latest_version"\e[m"
+  if [[ "$latest_version" < "$version" ]]; then
+    echo -e $'\e[4mHowever\e[m', its version$'\e[1;31m'$version$'\e[m' may not be the latest $'\e[1;31m'$latest_version$'\e[m'
     print_get_java
   fi
   exit 0

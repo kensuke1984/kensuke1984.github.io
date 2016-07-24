@@ -16,5 +16,5 @@ exit 1
 fi
 
 $JAVA -cp $kibrary io.github.kensuke1984.anisotime.ANISOtime $@
-
+echo $?
 exit $?
