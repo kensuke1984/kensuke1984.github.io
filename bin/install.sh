@@ -39,6 +39,7 @@ wget -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x 
 
 $KIBRARY_BIN/javaCheck 
 if [ $? -ne 0 ]; then
+  echo "Installation failed."
   return 2>/dev/null
   exit 1
 fi
