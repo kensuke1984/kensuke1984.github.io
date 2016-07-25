@@ -1,5 +1,6 @@
 #!/bin/bash
 #set -e
+set -o posix
 
 readonly KIBRARY_DIR=$HOME/.Kibrary
 readonly KIBRARY_BIN=$KIBRARY_DIR/bin
