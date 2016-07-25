@@ -16,7 +16,7 @@ $((curl -s http://java.com/en/download/installed8.jsp 2>/dev/null || wget -q -O 
 version=$($JAVA -version |&\
   awk '/java version/{gsub(/\x22/,"",$3);print $3}')
 
-printf "Java version in PATH is %s\n" $version
+printf "Java version in PATH is %s.\n" $version
 
 if [ $(echo $version | grep -e '1.8') ]; then
   echo "Yes, we can run ANISOtime."
