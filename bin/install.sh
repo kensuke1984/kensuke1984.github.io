@@ -33,9 +33,9 @@ fi
 cd $KIBRARY_DIR
 
 #bin
-wget -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck && chmod +x $KIBRARY_BIN/javaCheck
-wget -P $KIBRARY_BIN http://kensuke1984.github.io/bin/anisotime && chmod +x $KIBRARY_BIN/anisotime
-wget -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x $KIBRARY_BIN/javaCheck.jar
+wget -q -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck && chmod +x $KIBRARY_BIN/javaCheck
+wget -q -P $KIBRARY_BIN http://kensuke1984.github.io/bin/anisotime && chmod +x $KIBRARY_BIN/anisotime
+wget -q -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x $KIBRARY_BIN/javaCheck.jar
 
 
 $KIBRARY_BIN/javaCheck 
@@ -46,11 +46,11 @@ if [ $? -ne 0 ]; then
 fi
 
 #Build Kibrary
-echo "Downloading build scripts in $KIBRARY_DIR"
-wget http://kensuke1984.github.io/gradlew.tar
+echo "Kibrary is in $KIBRARY_DIR"
+wget -q http://kensuke1984.github.io/gradlew.tar
 tar xf gradlew.tar
-./gradlew
-./gradlew build
+./gradlew -q >/dev/null
+./gradlew -q build
 
 mv build/libs/kibrary*jar $KIBRARY_BIN
 

@@ -2,7 +2,7 @@
 set -o posix
 
 function print_get_java(){
-  printf "Get the latest Java \033[1;31m %s \033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" $latest_version
+  printf "Get the latest Java \033[1;31m%s\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" $latest_version
   return
 }
 
