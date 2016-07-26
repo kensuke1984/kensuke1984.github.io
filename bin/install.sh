@@ -25,7 +25,9 @@ if [ ! -e $KIBRARY_DIR ]; then
   fi
 else
   printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below\n" $KIBRARY_DIR 
-  echo  "/bin/bash <(curl http://kensuke1984.github.io/bin/install.sh) -f"
+  echo "curl -s http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
+  echo "or" 
+  echo "wget -q -O - http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
   return 2>/dev/null
   exit 2
 fi
