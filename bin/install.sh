@@ -13,18 +13,18 @@ do
 done
 
 if [ $FLG_F ]; then
-  rm -rf $KIBRARY_DIR
+  rm -rf "$KIBRARY_DIR"
 fi
 
-if [ ! -e $KIBRARY_DIR ]; then
-  mkdir -p $KIBRARY_BIN
+if [ ! -e "$KIBRARY_DIR" ]; then
+  mkdir -p "$KIBRARY_BIN"
   if [ $? -ne 0 ]; then
-    echo "Could not create $installDir"
+    echo "Could not create $KIBRARY_DIR"
     return 2>/dev/null
     exit 1 
   fi
 else
-  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below\n" $KIBRARY_DIR 
+  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below\n" "$KIBRARY_DIR" 
   echo "curl -s http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
   echo "or" 
   echo "wget -q -O - http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
@@ -32,15 +32,15 @@ else
   exit 2
 fi
 
-cd $KIBRARY_DIR
+cd "$KIBRARY_DIR" || (echo "Could not cd to $KIBRARY_DIR. Install failure."; exit 1)
 
 #bin
-wget -q -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck && chmod +x $KIBRARY_BIN/javaCheck
-wget -q -P $KIBRARY_BIN http://kensuke1984.github.io/bin/anisotime && chmod +x $KIBRARY_BIN/anisotime
-wget -q -P $KIBRARY_BIN http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x $KIBRARY_BIN/javaCheck.jar
+wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/bin/javaCheck && chmod +x "$KIBRARY_BIN"/javaCheck
+wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/bin/anisotime && chmod +x "$KIBRARY_BIN"/anisotime
+wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x "$KIBRARY_BIN"/javaCheck.jar
 
 
-$KIBRARY_BIN/javaCheck 
+"$KIBRARY_BIN"/javaCheck 
 if [ $? -ne 0 ]; then
   echo "Installation failed."
   return 2>/dev/null
@@ -54,19 +54,19 @@ tar xf gradlew.tar
 ./gradlew -q >/dev/null
 ./gradlew -q build
 
-mv build/libs/kibrary*jar $KIBRARY_BIN
+mv build/libs/kibrary*jar "$KIBRARY_BIN"
 
-readonly KIBRARY=$(ls $KIBRARY_BIN/kib*jar)
+readonly KIBRARY=$(ls "$KIBRARY_BIN"/kib*jar)
 
 #bash
-cat <<EOF >$KIBRARY_BIN/init_bash.sh
+cat <<EOF >"$KIBRARY_BIN"/init_bash.sh
 ##classpath
 export CLASSPATH=\$CLASSPATH:$KIBRARY
 export PATH=\$PATH:$KIBRARY_BIN
 EOF
 
 #tcsh
-cat <<EOF >$KIBRARY_BIN/init_tcsh.sh
+cat <<EOF >"$KIBRARY_BIN"/init_tcsh.sh
 ##classpath
 set opt_set = \$?nonomatch
 set nonomatch
@@ -83,12 +83,12 @@ EOF
 
 echo Copy and paste it to setup PATH and CLASSPATH.
 
-if echo $SHELL | grep -qE 'bash|zsh' ; then
-  echo source $KIBRARY_BIN/init_bash.sh
-elif echo $SHELL | grep -qE 'tcsh' ; then
-  echo source $KIBRARY_BIN/init_tcsh.sh 
+if echo "$SHELL" | grep -qE 'bash|zsh' ; then
+  echo "source $KIBRARY_BIN/init_bash.sh"
+elif echo "$SHELL" | grep -qE 'tcsh' ; then
+  echo "source $KIBRARY_BIN/init_tcsh.sh" 
 else
-  echo Please add $KIBRARY_BIN in PATH.
+  echo "Please add $KIBRARY_BIN in PATH."
 fi
 #source $KIBRARY_BIN/init_bash.sh 2>/dev/null || source $KIBRARY_BIN/init_tcsh.sh 2>/dev/null
 #return 2> /dev/null
