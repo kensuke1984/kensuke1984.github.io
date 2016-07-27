@@ -52,9 +52,14 @@ echo "Kibrary is in $KIBRARY_DIR"
 wget -q http://kensuke1984.github.io/gradlew.tar
 tar xf gradlew.tar
 ./gradlew -q >/dev/null
-./gradlew -q build
+./gradlew -q build 2>/dev/null 
 
-mv build/libs/kibrary*jar "$KIBRARY_BIN"
+if [ $? -eq 0 ]; then
+  mv build/libs/kibrary*jar "$KIBRARY_BIN" 
+else
+  echo "Due to a failure of building Kibrary, downloading the latest binary release.";
+  wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/kibrary-latest.jar
+fi 
 
 readonly KIBRARY=$(ls "$KIBRARY_BIN"/kib*jar)
 
