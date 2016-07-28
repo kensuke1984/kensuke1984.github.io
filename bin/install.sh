@@ -12,6 +12,17 @@ do
   esac
 done
 
+
+
+if which wget &>/dev/null; then
+  downloader=wget
+elif which curl &>/dev/null; then
+  downloader=curl
+else
+  printf "No downloader is found. Install \e[31mGNU Wget\e[m (\e[4mhttps://www.gnu.org/software/wget/\e[m) or \e[31mcurl\e[m (\e[4mhttps://curl.haxx.se/\e[m), otherwise please download the latest Kibrary manually.\n"
+  exit 3
+fi
+
 if [ $FLG_F ]; then
   rm -rf "$KIBRARY_DIR"
 fi
@@ -24,10 +35,12 @@ if [ ! -e "$KIBRARY_DIR" ]; then
     exit 1 
   fi
 else
-  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below\n" "$KIBRARY_DIR" 
-  echo "curl -s http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
-  echo "or" 
-  echo "wget -q -O - http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
+  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below:\n" "$KIBRARY_DIR" 
+  if [ $downloader = "curl" ]; then
+    echo "curl -s http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
+  else
+    echo "wget -q -O - http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
+  fi
   return 2>/dev/null
   exit 2
 fi
@@ -35,10 +48,19 @@ fi
 cd "$KIBRARY_DIR" || (echo "Could not cd to $KIBRARY_DIR. Install failure."; exit 1)
 
 #bin
-wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/bin/javaCheck && chmod +x "$KIBRARY_BIN"/javaCheck
-wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/bin/anisotime && chmod +x "$KIBRARY_BIN"/anisotime
-wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/bin/javaCheck.jar && chmod +x "$KIBRARY_BIN"/javaCheck.jar
+if [ $downloader = "curl" ]; then
+  curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaCheck
+  curl -s -o "$KIBRARY_BIN/anisotime" https://kensuke1984.github.io/bin/anisotime
+  curl -s -o "$KIBRARY_BIN/javaCheck.jar" https://kensuke1984.github.io/bin/javaCheck.jar
+else
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
+fi
 
+chmod +x "$KIBRARY_BIN/javaCheck"
+chmod +x "$KIBRARY_BIN/anisotime"
+chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
 "$KIBRARY_BIN"/javaCheck 
 if [ $? -ne 0 ]; then
@@ -49,7 +71,11 @@ fi
 
 #Build Kibrary
 echo "Kibrary is in $KIBRARY_DIR"
-wget -q http://kensuke1984.github.io/gradlew.tar
+if [ $downloader = "curl" ]; then
+  curl -s -o gradlew.tar https://kensuke1984.github.io/gradlew.tar
+else
+  wget -q https://kensuke1984.github.io/gradlew.tar
+fi
 tar xf gradlew.tar
 ./gradlew -q >/dev/null
 ./gradlew -q build 2>/dev/null 
@@ -58,7 +84,11 @@ if [ $? -eq 0 ]; then
   mv build/libs/kibrary*jar "$KIBRARY_BIN" 
 else
   echo "Due to a failure of building Kibrary, downloading the latest binary release.";
-  wget -q -P "$KIBRARY_BIN" http://kensuke1984.github.io/kibrary-latest.jar
+  if [ $downloader = "curl" ]; then
+    curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/kibrary-latest.jar
+  else
+    wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/kibrary-latest.jar
+  fi
 fi 
 
 readonly KIBRARY=$(ls "$KIBRARY_BIN"/kib*jar)
