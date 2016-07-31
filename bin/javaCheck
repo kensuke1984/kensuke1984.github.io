@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -o posix
 
 function print_get_java(){

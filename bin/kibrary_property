@@ -1,5 +1,6 @@
 #!/bin/sh
 set -o posix
+
 if [ -z "${JAVA}" ] ; then
 JAVA=java 
 fi
@@ -15,5 +16,5 @@ if [ $? -ne 0 ]; then
 exit 1
 fi
 
-"$JAVA" -cp "$kibrary" io.github.kensuke1984.anisotime.ANISOtime "$@"
+"$JAVA" -cp "$kibrary" io.github.kensuke1984.kibrary.Property "$@"
 exit $?
