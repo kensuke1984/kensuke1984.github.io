@@ -1,7 +1,7 @@
 #!/bin/sh
 set -o posix
 
-function print_get_java(){
+print_get_java(){
   printf "Get the latest Java \033[1;31m%s\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" "$latest_version"
   return
 }
@@ -16,9 +16,12 @@ $( (curl -s http://java.com/en/download/installed8.jsp 2>/dev/null || wget -q -O
 version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
 printf "Java version in PATH is %s.\n" "$version"
 
+version_final_number=${version#1.8.0_}
+latest_version_final_number=${latest_version#1.8.0_}
+
 if echo "$version" | grep -q '1.8'; then
   echo "Yes, we can run ANISOtime."
-  if [[ "$version" < "$latest_version" ]]; then
+  if [ "$version_final_number" -lt "$latest_version_final_number" ]; then
     printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$version" "$latest_version"
     print_get_java
   fi
