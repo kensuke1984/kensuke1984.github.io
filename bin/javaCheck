@@ -19,7 +19,7 @@ ask_install_java(){
   printf "Do you want to install the latest Java by Oracle in %s (yes/no)\n" "$KIBRARY_DIR"
   read -r ans
   if [ "$ans" = "yes" ]; then
-    javaDownload
+    javaInstall
   fi
   return
 }

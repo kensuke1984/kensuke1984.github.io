@@ -54,17 +54,20 @@ cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; e
 #bin
 if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaCheck
+  curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaInstall
   curl -s -o "$KIBRARY_BIN/anisotime" https://kensuke1984.github.io/bin/anisotime
   curl -s -o "$KIBRARY_BIN/javaCheck.jar" https://kensuke1984.github.io/bin/javaCheck.jar
   curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
 else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaInstall
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
   wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
 fi
 
 chmod +x "$KIBRARY_BIN/javaCheck"
+chmod +x "$KIBRARY_BIN/javaInstall"
 chmod +x "$KIBRARY_BIN/anisotime"
 chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
