@@ -8,8 +8,14 @@ else
   exit 71
 fi
 
+printf "Do you want to install the latest Java by Oracle in %s (yes/no)\n" "$KIBRARY_DIR"
+read -r ans
+if [ "$ans" != "yes" ]; then
+  exit 1
+fi
+
 mkdir -p "$KIBRARY_JAVA_HOME"
-cd "$KIBRARY_JAVA_HOME" || exit 1
+cd "$KIBRARY_JAVA_HOME" || exit 2
 
 echo "The latest Java is being installed in the Kibrary folder ($KIBDIR)."
 
@@ -47,6 +53,7 @@ fi
 if [ "$OS" = "Linux" ]; then
   tar -xf /tmp/javaInstaller.tar
   ln -sTf "$(ls -dt jdk* | head -n1)" latest
+  rm /tmp/javaInstaller.tar
 fi
 
 if [ "$OS" = "Darwin" ]; then
@@ -54,6 +61,7 @@ if [ "$OS" = "Darwin" ]; then
   | awk '{$1=$2=""; print $0}' | xargs ) && \
   sudo installer -pkg "${MOUNTDIR}/"*.pkg -target / 
   hdiutil unmount "${MOUNTDIR}"
+  rm /tmp/javaInstaller.dmg
 fi
 
 

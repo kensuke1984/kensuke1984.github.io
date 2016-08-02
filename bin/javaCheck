@@ -4,23 +4,14 @@ set -o posix
 if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
   . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
 else
-  printf "No file for variables. Please reinstall Kibrary.\n"
+  printf "No file for variables. Please reinstall Kibrary.\n" 1>&2
   exit 71
 fi
 
-
 print_get_java(){
-  printf "Get the latest Java \033[1;31m%s\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" "$latest_version"
-  ask_install_java
-  return
-}
-
-ask_install_java(){
-  printf "Do you want to install the latest Java by Oracle in %s (yes/no)\n" "$KIBRARY_DIR"
-  read -r ans
-  if [ "$ans" = "yes" ]; then
-    javaInstall
-  fi
+  printf "Get the latest Java \033[1;31m%s\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" "$latest_version" 1>&2
+  printf "If you want to install automatically, launch the script as below (copy and paste):\n" 1>&2
+  printf "%s\n" "$KIBRARY_BIN/javaInstall" 1>&2
   return
 }
 
@@ -41,7 +32,7 @@ if echo "$version" | grep -q '1.8'; then
   fi
   exit 0
 else
-  echo "It cannot run ANISOtime."
+  echo "It cannot run ANISOtime." 1>&2
   print_get_java
   exit 1
 fi
