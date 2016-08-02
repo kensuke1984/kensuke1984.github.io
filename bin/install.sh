@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #set -e
 set -o posix
 
@@ -14,9 +14,9 @@ done
 
 
 
-if which wget &>/dev/null; then
+if which wget >&/dev/null; then
   downloader=wget
-elif which curl &>/dev/null; then
+elif which curl >&/dev/null; then
   downloader=curl
 else
   printf "No downloader is found. Install \e[31mGNU Wget\e[m (\e[4mhttps://www.gnu.org/software/wget/\e[m) or \e[31mcurl\e[m (\e[4mhttps://curl.haxx.se/\e[m), otherwise please download the latest Kibrary manually.\n"

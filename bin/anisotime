@@ -1,12 +1,19 @@
 #!/bin/sh
 set -o posix
+
+readonly KIBRARY_DIR="$HOME/.Kibrary"
+readonly KIBRARY_JAVA="$HOME/.Kibrary/java"
+readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
+readonly kibrary=$(ls "$KIBRARY_BIN"/kibrary*jar)
+
+if [ -e "$KIBJAVA"/latest/bin/java ]; then
+  JAVA="$KIBJAVA"/latest/bin/java
+fi
+
 if [ -z "${JAVA}" ] ; then
 JAVA=java 
 fi
 
-readonly KIBRARY_DIR="$HOME/.Kibrary"
-readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
-readonly kibrary=$(ls "$KIBRARY_BIN"/kibrary*jar)
 
 "$KIBRARY_BIN"/javaCheck > /dev/null
 
