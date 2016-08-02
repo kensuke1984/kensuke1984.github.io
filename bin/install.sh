@@ -56,10 +56,12 @@ if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaCheck
   curl -s -o "$KIBRARY_BIN/anisotime" https://kensuke1984.github.io/bin/anisotime
   curl -s -o "$KIBRARY_BIN/javaCheck.jar" https://kensuke1984.github.io/bin/javaCheck.jar
+  curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
 else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
+  wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
 fi
 
 chmod +x "$KIBRARY_BIN/javaCheck"
@@ -131,11 +133,6 @@ else
 fi
 #source $KIBRARY_BIN/init_bash.sh 2>/dev/null || source $KIBRARY_BIN/init_tcsh.sh 2>/dev/null
 #return 2> /dev/null
-if [ $downloader = "curl" ]; then
-    curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
-  else
-    wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
-fi
 exit 0
 
 
