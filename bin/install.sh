@@ -2,8 +2,8 @@
 #set -e
 set -o posix
 
-readonly KIBRARY_DIR=$HOME/.Kibrary
-readonly KIBRARY_BIN=$KIBRARY_DIR/bin
+readonly KIBRARY_HOME=$HOME/.Kibrary
+readonly KIBRARY_BIN=$KIBRARY_HOME/bin
 
 while getopts f OPT
 do
@@ -28,18 +28,18 @@ fi
 
 
 if [ $FLG_F ]; then
-  rm -rf "$KIBRARY_DIR"
+  rm -rf "$KIBRARY_HOME"
 fi
 
-if [ ! -e "$KIBRARY_DIR" ]; then
+if [ ! -e "$KIBRARY_HOME" ]; then
   mkdir -p "$KIBRARY_BIN"
   if [ $? -ne 0 ]; then
-    echo "Could not create $KIBRARY_DIR"
+    echo "Could not create $KIBRARY_HOME"
     return 2>/dev/null
     exit 1 
   fi
 else
-  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below:\n" "$KIBRARY_DIR" 
+  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below:\n" "$KIBRARY_HOME" 
   if [ $downloader = "curl" ]; then
     echo "curl -s http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
   else
@@ -49,7 +49,7 @@ else
   exit 2
 fi
 
-cd "$KIBRARY_DIR" || (echo "Could not cd to $KIBRARY_DIR. Install failure."; exit 1)
+cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; exit 1)
 
 #bin
 if [ $downloader = "curl" ]; then
@@ -76,7 +76,7 @@ if [ $? -ne 0 ]; then
 fi
 
 #Build Kibrary
-echo "Kibrary is in $KIBRARY_DIR"
+echo "Kibrary is in $KIBRARY_HOME"
 if [ $downloader = "curl" ]; then
   curl -s -o gradlew.tar https://kensuke1984.github.io/gradlew.tar
 else

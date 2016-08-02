@@ -1,20 +1,19 @@
 #!/bin/sh
 set -o posix
 
-if [ -z "${JAVA}" ] ; then
-JAVA=java 
+if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
+  . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+else
+  printf "No file for variables. Please reinstall Kibrary.\n"
+  exit 71
 fi
 
-readonly KIBRARY_DIR="$HOME/.Kibrary"
-readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
-readonly kibrary=$(ls "$KIBRARY_BIN"/kibrary*jar)
-
-"$KIBRARY_BIN"/javaCheck > /dev/null
+javaCheck >/dev/null
 
 if [ $? -ne 0 ]; then
-"$KIBRARY_BIN"/javaCheck 
-exit 1
+  javaCheck 
+  exit 1
 fi
 
-"$JAVA" -cp "$kibrary" io.github.kensuke1984.kibrary.Operation "$@"
+"$JAVA" io.github.kensuke1984.kibrary.Operation "$@"
 exit $?

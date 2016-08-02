@@ -1,7 +1,10 @@
-readonly KIBRARY_DIR="$HOME/.Kibrary"
-readonly KIBRARY_JAVA="$HOME/.Kibrary/java/latest/bin/java"
-readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
+readonly KIBRARY_HOME="$HOME/.Kibrary"
+readonly KIBRARY_JAVA_HOME="$KIBRARY_HOME"/java
+readonly KIBRARY_JAVA="$KIBRARY_JAVA_HOME"/latest/bin/java
+readonly KIBRARY_BIN="$KIBRARY_HOME/bin"
 readonly kibrary=$(find ~/.Kibrary/bin -type f -name 'kib*' | tail -n1)
+
+readonly OS=$(uname)
 
 PATH=${KIBRARY_BIN}:$PATH
 
@@ -9,7 +12,7 @@ if [ -e "$KIBRARY_JAVA" ]; then
   JAVA="$KIBRARY_JAVA"
 fi
 
-if [ -z "${JAVA}" ] ; then
+if [ -z "${JAVA}" ]; then
   JAVA=java 
 fi
 

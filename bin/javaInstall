@@ -1,38 +1,42 @@
 #!/bin/sh
 set -o posix
 
-readonly KIBDIR="$HOME"/.Kibrary
-readonly KIBJAVA="$KIBDIR"/java
+if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
+  . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+else
+  printf "No file for variables. Please reinstall Kibrary.\n"
+  exit 71
+fi
 
-mkdir -p "$KIBJAVA"
-cd "$KIBJAVA" || exit 1
+mkdir -p "$KIBRARY_JAVA_HOME"
+cd "$KIBRARY_JAVA_HOME" || exit 1
 
 echo "The latest Java is being installed in the Kibrary folder ($KIBDIR)."
 
-os=$(uname)
-if  echo "$os" | grep -qvE "Darwin|Linux" ; then
-  echo "I am not familiar with $os. Sorry. Install Java by yourself, would you."
+
+if  echo "$OS" | grep -qvE "Darwin|Linux" ; then
+  echo "I am not familiar with $OS. Sorry. Install Java by yourself, would you."
   exit 2
 fi
 
-case "$os" in
+case "$OS" in
   "Linux" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz ;;
   "Darwin" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-macosx-x64.dmg ;;
 esac
 
 
 if which wget >&/dev/null; then
-  if [ "$os" = "Linux" ]; then
+  if [ "$OS" = "Linux" ]; then
     wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" -O /tmp/javaInstaller.tar $javaURL
   fi
-  if [ "$os" = "Darwin" ]; then
+  if [ "$OS" = "Darwin" ]; then
     wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" -O /tmp/javaInstaller.dmg $javaURL
   fi
 elif which curl >&/dev/null; then
-  if [ "$os" = "Linux" ]; then
+  if [ "$OS" = "Linux" ]; then
     curl -s -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/javaInstaller.tar $javaURL
   fi
-  if [ "$os" = "Darwin" ]; then
+  if [ "$OS" = "Darwin" ]; then
     curl -s -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/javaInstaller.dmg $javaURL 
   fi
 else
@@ -40,12 +44,12 @@ else
   exit 3
 fi
 
-if [ "$os" = "Linux" ]; then
+if [ "$OS" = "Linux" ]; then
   tar -xf /tmp/javaInstaller.tar
   ln -sTf "$(ls -dt jdk* | head -n1)" latest
 fi
 
-if [ "$os" = "Darwin" ]; then
+if [ "$OS" = "Darwin" ]; then
   MOUNTDIR=$(hdiutil mount /tmp/javaInstaller.dmg | tail -1 \
   | awk '{$1=$2=""; print $0}' | xargs ) && \
   sudo installer -pkg "${MOUNTDIR}/"*.pkg -target / 
