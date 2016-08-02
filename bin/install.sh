@@ -23,6 +23,10 @@ else
   exit 3
 fi
 
+
+
+
+
 if [ $FLG_F ]; then
   rm -rf "$KIBRARY_DIR"
 fi
@@ -127,6 +131,11 @@ else
 fi
 #source $KIBRARY_BIN/init_bash.sh 2>/dev/null || source $KIBRARY_BIN/init_tcsh.sh 2>/dev/null
 #return 2> /dev/null
+if [ $downloader = "curl" ]; then
+    curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
+  else
+    wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
+fi
 exit 0
 
 

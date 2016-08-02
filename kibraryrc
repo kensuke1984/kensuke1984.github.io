@@ -1,0 +1,16 @@
+readonly KIBRARY_DIR="$HOME/.Kibrary"
+readonly KIBRARY_JAVA="$HOME/.Kibrary/java/latest/bin/java"
+readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
+readonly kibrary=$(ls "$KIBRARY_BIN"/kibrary*jar)
+
+PATH=${KIBRARY_BIN}:$PATH
+
+if [ -e "$KIBRARY_JAVA" ]; then
+  JAVA="$KIBRARY_JAVA"
+fi
+
+if [ -z "${JAVA}" ] ; then
+  JAVA=java 
+fi
+
+CLASSPATH="$kibrary"
