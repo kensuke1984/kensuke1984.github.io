@@ -1,7 +1,7 @@
 readonly KIBRARY_DIR="$HOME/.Kibrary"
 readonly KIBRARY_JAVA="$HOME/.Kibrary/java/latest/bin/java"
 readonly KIBRARY_BIN="$KIBRARY_DIR/bin"
-readonly kibrary=$(ls "$KIBRARY_BIN"/kibrary*jar)
+readonly kibrary=$(find ~/.Kibrary/bin -type f -name 'kib*' | tail -n1)
 
 PATH=${KIBRARY_BIN}:$PATH
 
