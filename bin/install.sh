@@ -14,17 +14,14 @@ done
 
 
 
-if which wget >&/dev/null; then
-  downloader=wget
-elif which curl >&/dev/null; then
+if which curl >&/dev/null; then
   downloader=curl
+elif which wget >&/dev/null; then
+  downloader=wget
 else
   printf "No downloader is found. Install \e[31mGNU Wget\e[m (\e[4mhttps://www.gnu.org/software/wget/\e[m) or \e[31mcurl\e[m (\e[4mhttps://curl.haxx.se/\e[m), otherwise please download the latest Kibrary manually.\n"
   exit 3
 fi
-
-
-
 
 
 if [ $FLG_F ]; then
@@ -54,7 +51,7 @@ cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; e
 #bin
 if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaCheck
-  curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaInstall
+  curl -s -o "$KIBRARY_BIN/javaInstall" https://kensuke1984.github.io/bin/javaInstall
   curl -s -o "$KIBRARY_BIN/anisotime" https://kensuke1984.github.io/bin/anisotime
   curl -s -o "$KIBRARY_BIN/javaCheck.jar" https://kensuke1984.github.io/bin/javaCheck.jar
   curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
@@ -73,9 +70,12 @@ chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
 "$KIBRARY_BIN"/javaCheck 
 if [ $? -ne 0 ]; then
-  echo "Installation failed."
-  return 2>/dev/null
-  exit 1
+  bin/javaInstall
+  if [ $? -ne 0 ]; then
+    echo "Installation cancelled."
+    return 2>/dev/null
+    exit 1
+  fi
 fi
 
 #Build Kibrary

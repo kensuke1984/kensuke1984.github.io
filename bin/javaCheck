@@ -24,7 +24,7 @@ printf "Java version in PATH is %s.\n" "$version"
 version_final_number=${version#1.8.0_}
 latest_version_final_number=${latest_version#1.8.0_}
 
-if echo "$version" | grep -q '1.8'; then
+if echo "$version" | grep -q '1.8.0_'; then
   echo "Yes, we can run ANISOtime."
   if [ "$version_final_number" -lt "$latest_version_final_number" ]; then
     printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$version" "$latest_version"
