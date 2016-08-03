@@ -109,6 +109,10 @@ cat <<EOF >"$KIBRARY_BIN"/init_bash.sh
 ##classpath
 export CLASSPATH=\$CLASSPATH:$KIBRARY
 export PATH=\$PATH:$KIBRARY_BIN
+if [ -e "${KIBRARY_HOME}"/java/latest/bin ];then
+  export PATH="${KIBRARY_HOME}"/java/latest/bin:\$PATH
+  export JAVA_HOME="${KIBRARY_HOME}"/java/latest
+fi
 EOF
 
 #tcsh
