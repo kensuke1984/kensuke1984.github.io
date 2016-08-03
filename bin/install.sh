@@ -76,7 +76,9 @@ if [ $? -ne 0 ]; then
     return 2>/dev/null
     exit 1
   fi
+  export JAVA_HOME="${KIBRARY_HOME}/java/latest"
 fi
+
 
 #Build Kibrary
 echo "Kibrary is in $KIBRARY_HOME"
