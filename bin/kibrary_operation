@@ -8,9 +8,7 @@ else
   exit 71
 fi
 
-javaCheck >/dev/null
-
-if [ $? -ne 0 ]; then
+if ! javaCheck -r >/dev/null; then
   javaCheck 
   exit 1
 fi
