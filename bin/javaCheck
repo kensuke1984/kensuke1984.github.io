@@ -2,24 +2,41 @@
 set -o posix
 
 usage_exit() {
-  echo "Usage: $0 [-i] [-r]" 1>&2
+  echo "Usage: $0 [-i] [-r] [-p] [-l] [-k]" 1>&2
   echo "Check the versions of Java in Kibrary if exists, otherwise in PATH"
   echo "  -r $0 checks if the installed Java can run Kibrary and does not care about the Java compiler. If this option is not specified, $0 also checks if the installed Java compiler can compile Kibrary."
   echo "  -i prints java and javac version."
+  echo "  -p prints or checks java and javac version in PATH even Kibrary has ones."
+  echo "  -k prints or checks java and javac version in Kibrary, if there are none in Kibrary, always error exits."
+  echo "  -l checks both java and javac not only can run Kibrary but are the latest. If -r option is specified, the version of javac is not checked."
   exit 1
 }
 
-while getopts ir OPT
+while getopts ilrkp OPT
 do
   case $OPT in
     "i" ) readonly FLG_I="TRUE" ;;
+    "k" ) readonly FLG_K="TRUE" ;;
     "r" ) readonly FLG_R="TRUE" ;;
+    "p" ) readonly FLG_P="TRUE" ;;
+    "l" ) readonly FLG_L="TRUE" ;;
     "?" ) usage_exit;;
   esac
 done
 
+if [ -n "$FLG_K" -a -n "$FLG_P" ]; then
+  echo "-k and -p can not be used simultaneously."
+  exit 1
+fi
+
 if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
-  . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+  if [ -n "$FLG_K" ]; then
+    . "$HOME"/.Kibrary/bin/.kibraryrc -k || return 1
+  elif [ -n "$FLG_P" ]; then
+    . "$HOME"/.Kibrary/bin/.kibraryrc -p || return 1
+  else
+    . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+  fi
 else
   printf "No file for variables. Please reinstall Kibrary.\n" 1>&2
   exit 71
@@ -58,6 +75,9 @@ if echo "$version" | grep -q '1.8.0_'; then
   if [ "$version_final_number" -lt "$latest_version_final_number" ]; then
     printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$version" "$latest_version"
     print_get_java
+    if [ -n "$FLG_L" ]; then
+      exit 2
+    fi
   fi
 
   if [ -n "$FLG_R" ]; then
@@ -69,6 +89,9 @@ if echo "$version" | grep -q '1.8.0_'; then
     if [ "$javac_version_final_number" -lt "$latest_version_final_number" ]; then
       printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$javac_version" "$latest_version"
       print_get_java
+      if [ -n "$FLG_L" ]; then
+        exit 2
+      fi
     fi
     exit 0
   else

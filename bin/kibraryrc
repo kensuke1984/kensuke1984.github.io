@@ -1,22 +1,45 @@
+while getopts kp OPT
+do
+  case $OPT in
+#Only Java in Kibrary is used.
+    "k" ) readonly FLG_K="TRUE" ;;
+#Only Java in Path is used
+    "p" ) readonly FLG_P="TRUE" ;;
+    "?" ) exit;;
+  esac
+done
+
+if [ -n "$FLG_K" -a -n "$FLG_P" ]; then
+  echo "-k and -p can not be used simultaneously."
+fi
+
 readonly KIBRARY_HOME="$HOME/.Kibrary"
 readonly KIBRARY_JAVA_HOME="$KIBRARY_HOME"/java
 readonly KIBRARY_JAVA="$KIBRARY_JAVA_HOME"/latest/bin/java
 readonly KIBRARY_BIN="$KIBRARY_HOME/bin"
 readonly kibrary=$(find ~/.Kibrary/bin -type f -name 'kib*' | tail -n1)
-
 readonly OS=$(uname)
 
+export CLASSPATH="$kibrary"
 export PATH=${KIBRARY_BIN}:$PATH
 
-if [ -e "$KIBRARY_JAVA" ]; then
+if [ -n "$FLG_K" ]; then
   JAVA="$KIBRARY_JAVA"
-  export JAVA_HOME="${KIBRARY_JAVA_HOME}/latest"
+  JAVA_HOME="${KIBRARY_JAVA_HOME}/latest"
   JAVAC="${JAVA_HOME}"/bin/javac
-fi
-
-if [ -z "${JAVA}" ]; then
+elif [ -n "$FLG_P" ]; then
   JAVA=java
   JAVAC=javac
+  JAVA_HOME=$(dirname $(dirname java))
+elif [ -e "$KIBRARY_JAVA" ]; then
+  JAVA="$KIBRARY_JAVA"
+  JAVA_HOME="${KIBRARY_JAVA_HOME}/latest"
+  JAVAC="${JAVA_HOME}"/bin/javac
+elif [ -z "${JAVA}" ]; then
+  JAVA=java
+  JAVAC=javac
+  JAVA_HOME=$(dirname $(dirname java))
 fi
+export JAVA_HOME
 
-export CLASSPATH="$kibrary"
+return 2>/dev/null

@@ -23,6 +23,18 @@ else
   exit 71
 fi
 
+mkdir -p "$KIBRARY_JAVA_HOME"
+cd "$KIBRARY_JAVA_HOME" || exit 2
+
+"${KIBRARY_BIN}/javaCheck" -kl >&/dev/null && exit 255
+
+if "${KIBRARY_BIN}/javaCheck" -pl >&/dev/null; then
+  ln -s $(dirname $(dirname $(readlink -f $(which java)))) "${KIBRARY_JAVA_HOME}"
+  ln -sTf "$(ls -dt ${KIBRARY_JAVA_HOME}/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
+  echo "The latest Java is found. Links to the Java home is created in Kibrary."
+  exit 255
+fi
+
 if [ -z "$FLG_F" ]; then
   printf "Do you want to install the latest Java by Oracle in %s (yes/no)\n" "$KIBRARY_DIR"
   read -r ans
@@ -30,9 +42,6 @@ if [ -z "$FLG_F" ]; then
     exit 1
   fi
 fi
-
-mkdir -p "$KIBRARY_JAVA_HOME"
-cd "$KIBRARY_JAVA_HOME" || exit 2
 
 echo "The latest Java is being installed in the Kibrary folder ($KIBDIR)."
 
