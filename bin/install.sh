@@ -68,7 +68,7 @@ chmod +x "$KIBRARY_BIN/javaInstall"
 chmod +x "$KIBRARY_BIN/anisotime"
 chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
-if ! "${KIBRARY_BIN}/javaCheck -r" >&/dev/null; then
+if ! "${KIBRARY_BIN}/javaCheck" -r >&/dev/null; then
   echo "Java is not found in PATH.";
   bin/javaInstall
   if [ $? -ne 0 ]; then
