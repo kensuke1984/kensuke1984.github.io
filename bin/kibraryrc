@@ -11,10 +11,12 @@ PATH=${KIBRARY_BIN}:$PATH
 if [ -e "$KIBRARY_JAVA" ]; then
   JAVA="$KIBRARY_JAVA"
   export JAVA_HOME="${KIBRARY_JAVA_HOME}/latest"
+  JAVAC="${JAVA_HOME}"/bin/javac
 fi
 
 if [ -z "${JAVA}" ]; then
-  JAVA=java 
+  JAVA=java
+  JAVAC=javac
 fi
 
 CLASSPATH="$kibrary"

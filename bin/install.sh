@@ -8,7 +8,7 @@ readonly KIBRARY_BIN=$KIBRARY_HOME/bin
 while getopts f OPT
 do
   case $OPT in
-    "f" ) readonly FLG_F="TRUE" 
+    "f" ) readonly FLG_F="TRUE" ;; 
   esac
 done
 
@@ -68,12 +68,27 @@ chmod +x "$KIBRARY_BIN/javaInstall"
 chmod +x "$KIBRARY_BIN/anisotime"
 chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
-"$KIBRARY_BIN"/javaCheck 
-if [ $? -ne 0 ]; then
+if "${KIBRARY_BIN}/javaCheck -r" >&/dev/null; then
+  echo "Java is not found in PATH.";
   bin/javaInstall
   if [ $? -ne 0 ]; then
     echo "Installation cancelled."
-    return 2>/dev/null
+    exit 1
+  fi
+fi
+
+
+if "$KIBRARY_BIN"/javaCheck >&/dev/null; then
+  echo "No Java compiler that can compile ANISOtime is found."
+  bin/javaInstall
+  if [ $? -ne 0 ]; then
+    echo "Installation cancelled."
+    echo "Due to a failure of building Kibrary, downloading the latest binary release.";
+    if [ $downloader = "curl" ]; then
+      curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/kibrary-latest.jar
+    else
+      wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/kibrary-latest.jar
+    fi
     exit 1
   fi
   export JAVA_HOME="${KIBRARY_HOME}/java/latest"
@@ -133,9 +148,9 @@ EOF
 
 echo Copy and paste it to setup PATH and CLASSPATH.
 
-if echo "$SHELL" | grep -qE 'bash|zsh' ; then
+if echo "$SHELL" | grep -qE 'bash|zsh'; then
   echo "source $KIBRARY_BIN/init_bash.sh"
-elif echo "$SHELL" | grep -qE 'tcsh' ; then
+elif echo "$SHELL" | grep -qE 'tcsh'; then
   echo "source $KIBRARY_BIN/init_tcsh.sh" 
 else
   echo "Please add $KIBRARY_BIN in PATH."

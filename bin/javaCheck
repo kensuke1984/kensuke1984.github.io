@@ -1,6 +1,23 @@
 #!/bin/sh
 set -o posix
 
+usage_exit() {
+  echo "Usage: $0 [-i] [-r]" 1>&2
+  echo "Check the versions of Java in Kibrary if exists, otherwise in PATH"
+  echo "  -r $0 checks if the installed Java can run Kibrary and does not care about the Java compiler. If this option is not specified, $0 also checks if the installed Java compiler can compile Kibrary."
+  echo "  -i prints java and javac version."
+  exit 1
+}
+
+while getopts ir OPT
+do
+  case $OPT in
+    "i" ) readonly FLG_I="TRUE" ;;
+    "r" ) readonly FLG_R="TRUE" ;;
+    "?" ) usage_exit;;
+  esac
+done
+
 if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
   . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
 else
@@ -17,12 +34,24 @@ print_get_java(){
 
 latest_version=\
 $( (curl -s http://java.com/en/download/installed8.jsp 2>/dev/null || wget -q -O - http://java.com/en/download/installed8.jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); print $2}')
-
-version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
-printf "Java version in PATH is %s.\n" "$version"
-
-version_final_number=${version#1.8.0_}
 latest_version_final_number=${latest_version#1.8.0_}
+
+if which "$JAVA" >&/dev/null; then
+  version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
+  version_final_number=${version#1.8.0_}
+fi
+
+if which "$JAVAC" >&/dev/null; then
+  javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
+  javac_version_final_number=${javac_version#1.8.0_}
+fi
+
+if [ -n "$FLG_I" ]; then
+    printf "java %s\n" "$version"
+    printf "javac %s\n" "$javac_version"
+  exit 0
+fi
+
 
 if echo "$version" | grep -q '1.8.0_'; then
   echo "Yes, we can run ANISOtime."
@@ -30,9 +59,24 @@ if echo "$version" | grep -q '1.8.0_'; then
     printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$version" "$latest_version"
     print_get_java
   fi
-  exit 0
+
+  if [ -n "$FLG_R" ]; then
+    exit 0
+  fi
+
+  if echo "$javac_version" | grep -q '1.8.0_'; then
+    echo "Yes, we can compile ANISOtime."
+    if [ "$javac_version_final_number" -lt "$latest_version_final_number" ]; then
+      printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$javac_version" "$latest_version"
+      print_get_java
+    fi
+    exit 0
+  else
+    echo "It cannot compile ANISOtime." 
+    exit 1
+  fi
 else
-  echo "It cannot run ANISOtime." 1>&2
+  echo "It cannot run ANISOtime." 
   print_get_java
   exit 1
 fi
