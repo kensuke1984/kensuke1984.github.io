@@ -85,9 +85,9 @@ if ! "$KIBRARY_BIN"/javaCheck >&/dev/null; then
     echo "Installation cancelled."
     echo "Due to a failure of building Kibrary, downloading the latest binary release.";
     if [ $downloader = "curl" ]; then
-      curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/kibrary-latest.jar
+      curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/bin/kibrary-latest.jar
     else
-      wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/kibrary-latest.jar
+      wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary-latest.jar
     fi
     exit 1
   fi
