@@ -1,6 +1,21 @@
 #!/bin/sh
 set -o posix
 
+usage_exit(){ 
+  echo "Usage: $0 [-f]" 1>&2
+  echo "Java Development kit installer."
+  echo "  -f Install without any prompt."
+  exit 1
+}
+
+while getopts f OPT
+do
+  case $OPT in
+    "f" ) readonly FLG_F="TRUE" ;;
+    "?" ) usage_exit;;
+  esac
+done
+
 if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
   . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
 else
@@ -8,17 +23,18 @@ else
   exit 71
 fi
 
-printf "Do you want to install the latest Java by Oracle in %s (yes/no)\n" "$KIBRARY_DIR"
-read -r ans
-if [ "$ans" != "yes" ]; then
-  exit 1
+if [ -z "$FLG_F" ]; then
+  printf "Do you want to install the latest Java by Oracle in %s (yes/no)\n" "$KIBRARY_DIR"
+  read -r ans
+  if [ "$ans" != "yes" ]; then
+    exit 1
+  fi
 fi
 
 mkdir -p "$KIBRARY_JAVA_HOME"
 cd "$KIBRARY_JAVA_HOME" || exit 2
 
 echo "The latest Java is being installed in the Kibrary folder ($KIBDIR)."
-
 
 if  echo "$OS" | grep -qvE "Darwin|Linux" ; then
   echo "I am not familiar with $OS. Sorry. Install Java by yourself, would you."
@@ -29,7 +45,6 @@ case "$OS" in
   "Linux" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz ;;
   "Darwin" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-macosx-x64.dmg ;;
 esac
-
 
 if which wget >&/dev/null; then
   if [ "$OS" = "Linux" ]; then

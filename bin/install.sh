@@ -12,8 +12,6 @@ do
   esac
 done
 
-
-
 if which curl >&/dev/null; then
   downloader=curl
 elif which wget >&/dev/null; then
@@ -22,7 +20,6 @@ else
   printf "No downloader is found. Install \e[31mGNU Wget\e[m (\e[4mhttps://www.gnu.org/software/wget/\e[m) or \e[31mcurl\e[m (\e[4mhttps://curl.haxx.se/\e[m), otherwise please download the latest Kibrary manually.\n"
   exit 3
 fi
-
 
 if [ $FLG_F ]; then
   rm -rf "$KIBRARY_HOME"
@@ -68,6 +65,8 @@ chmod +x "$KIBRARY_BIN/javaInstall"
 chmod +x "$KIBRARY_BIN/anisotime"
 chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
+${KIBRARY_BIN}/javaInstall -f >&/dev/null
+
 if ! "${KIBRARY_BIN}/javaCheck" -r >&/dev/null; then
   echo "Java is not found in PATH.";
   bin/javaInstall
@@ -76,7 +75,6 @@ if ! "${KIBRARY_BIN}/javaCheck" -r >&/dev/null; then
     exit 1
   fi
 fi
-
 
 if ! "$KIBRARY_BIN"/javaCheck >&/dev/null; then
   echo "No Java compiler that can compile ANISOtime is found."
