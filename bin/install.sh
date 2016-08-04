@@ -65,22 +65,15 @@ chmod +x "$KIBRARY_BIN/javaInstall"
 chmod +x "$KIBRARY_BIN/anisotime"
 chmod +x "$KIBRARY_BIN/javaCheck.jar"
 
-${KIBRARY_BIN}/javaInstall -f >&/dev/null
-
-if ! "${KIBRARY_BIN}/javaCheck" -r >&/dev/null; then
-  echo "Java is not found in PATH.";
-  bin/javaInstall
-  if [ $? -ne 0 ]; then
-    echo "Installation cancelled."
+if ! "$KIBRARY_BIN"/javaCheck -r >&/dev/null; then
+  if !  ${KIBRARY_BIN}/javaInstall -f >&/dev/null; then
+    echo "Java is not found and cannot be installed. ANISOtime installation cancelled."
     exit 1
   fi
 fi
 
 if ! "$KIBRARY_BIN"/javaCheck >&/dev/null; then
-  echo "No Java compiler that can compile ANISOtime is found."
-  bin/javaInstall
-  if [ $? -ne 0 ]; then
-    echo "Installation cancelled."
+  if ! ${KIBRARY_BIN}/javaInstall -f >&/dev/null; then
     echo "Due to a failure of building Kibrary, downloading the latest binary release.";
     if [ $downloader = "curl" ]; then
       curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/bin/kibrary-latest.jar
