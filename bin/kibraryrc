@@ -6,7 +6,7 @@ readonly kibrary=$(find ~/.Kibrary/bin -type f -name 'kib*' | tail -n1)
 
 readonly OS=$(uname)
 
-PATH=${KIBRARY_BIN}:$PATH
+export PATH=${KIBRARY_BIN}:$PATH
 
 if [ -e "$KIBRARY_JAVA" ]; then
   JAVA="$KIBRARY_JAVA"
@@ -19,4 +19,4 @@ if [ -z "${JAVA}" ]; then
   JAVAC=javac
 fi
 
-CLASSPATH="$kibrary"
+export CLASSPATH="$kibrary"
