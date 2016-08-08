@@ -38,7 +38,6 @@ elif [ -e "$KIBRARY_JAVA" ]; then
 elif [ -z "${JAVA}" ]; then
   JAVA=java
   JAVAC=javac
-  JAVA_HOME=$(dirname $(dirname java))
 fi
 export JAVA_HOME
 
