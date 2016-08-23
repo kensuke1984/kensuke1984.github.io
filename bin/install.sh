@@ -2,8 +2,10 @@
 #set -e
 set -o posix
 
-readonly KIBRARY_HOME=$HOME/.Kibrary
-readonly KIBRARY_BIN=$KIBRARY_HOME/bin
+readonly KIBRARY_HOME="$HOME"/.Kibrary
+readonly KIBRARY_BIN="$KIBRARY_HOME"/bin
+readonly KIBRARY_SHARE="$KIBRARY_HOME"/share
+
 
 while getopts f OPT
 do
@@ -27,6 +29,7 @@ fi
 
 if [ ! -e "$KIBRARY_HOME" ]; then
   mkdir -p "$KIBRARY_BIN"
+  mkdir "$KIBRARY_SHARE"
   if [ $? -ne 0 ]; then
     echo "Could not create $KIBRARY_HOME"
     return 2>/dev/null
@@ -44,20 +47,26 @@ else
 fi
 
 cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; exit 1)
-
+$KIBRARY_SHARE
 #bin
 if [ $downloader = "curl" ]; then
-  curl -s -o "$KIBRARY_BIN/javaCheck" https://kensuke1984.github.io/bin/javaCheck
-  curl -s -o "$KIBRARY_BIN/javaInstall" https://kensuke1984.github.io/bin/javaInstall
-  curl -s -o "$KIBRARY_BIN/anisotime" https://kensuke1984.github.io/bin/anisotime
-  curl -s -o "$KIBRARY_BIN/javaCheck.jar" https://kensuke1984.github.io/bin/javaCheck.jar
+  curl -s -o "$KIBRARY_BIN"/javaCheck https://kensuke1984.github.io/bin/javaCheck
+  curl -s -o "$KIBRARY_BIN"/javaInstall https://kensuke1984.github.io/bin/javaInstall
+  curl -s -o "$KIBRARY_BIN"/anisotime https://kensuke1984.github.io/bin/anisotime
+  curl -s -o "$KIBRARY_BIN"/javaCheck.jar https://kensuke1984.github.io/bin/javaCheck.jar
   curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
+  curl -s -o "$KIBRARY_SHARE"/ak135.cat https://kensuke1984.github.io/share/ak135.cat
+  curl -s -o "$KIBRARY_SHARE"/prem.cat https://kensuke1984.github.io/share/prem.cat
+  curl -s -o "$KIBRARY_SHARE"/iprem.cat https://kensuke1984.github.io/share/iprem.cat
 else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaInstall
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
   wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
+  wget -q -P "$KIBRARY_SHARE" https://kensuke1984.github.io/share/iprem.cat
+  wget -q -P "$KIBRARY_SHARE" https://kensuke1984.github.io/share/ak135.cat
+  wget -q -P "$KIBRARY_SHARE" https://kensuke1984.github.io/share/prem.cat
 fi
 
 chmod +x "$KIBRARY_BIN/javaCheck"
