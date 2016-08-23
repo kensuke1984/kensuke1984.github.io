@@ -2,7 +2,7 @@
 set -o posix
 
 if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
-  . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+  . "$HOME"/.Kibrary/bin/.kibraryrc -- || return 1
 else
   printf "No file for variables. Please reinstall Kibrary.\n"
   exit 71

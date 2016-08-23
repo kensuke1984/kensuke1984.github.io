@@ -35,7 +35,7 @@ if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
   elif [ -n "$FLG_P" ]; then
     . "$HOME"/.Kibrary/bin/.kibraryrc -p || return 1
   else
-    . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+    . "$HOME"/.Kibrary/bin/.kibraryrc -- || return 1
   fi
 else
   printf "No file for variables. Please reinstall Kibrary.\n" 1>&2
