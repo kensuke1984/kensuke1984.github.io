@@ -47,7 +47,7 @@ else
 fi
 
 cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; exit 1)
-$KIBRARY_SHARE
+
 #bin
 if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN"/javaCheck https://kensuke1984.github.io/bin/javaCheck
