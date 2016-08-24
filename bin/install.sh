@@ -55,18 +55,12 @@ if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN"/anisotime https://kensuke1984.github.io/bin/anisotime
   curl -s -o "$KIBRARY_BIN"/javaCheck.jar https://kensuke1984.github.io/bin/javaCheck.jar
   curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
-  curl -s -o "$KIBRARY_SHARE"/ak135.cat https://kensuke1984.github.io/share/ak135.cat
-  curl -s -o "$KIBRARY_SHARE"/prem.cat https://kensuke1984.github.io/share/prem.cat
-  curl -s -o "$KIBRARY_SHARE"/iprem.cat https://kensuke1984.github.io/share/iprem.cat
 else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaInstall
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
   wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
-  wget -q -P "$KIBRARY_SHARE" https://kensuke1984.github.io/share/iprem.cat
-  wget -q -P "$KIBRARY_SHARE" https://kensuke1984.github.io/share/ak135.cat
-  wget -q -P "$KIBRARY_SHARE" https://kensuke1984.github.io/share/prem.cat
 fi
 
 chmod +x "$KIBRARY_BIN/javaCheck"
