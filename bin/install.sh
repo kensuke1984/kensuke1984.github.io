@@ -140,7 +140,7 @@ if (\$opt_set == 0) then
 endif
 EOF
 
-echo Copy and paste it to setup PATH and CLASSPATH.
+echo Copy and paste the below line to setup PATH and CLASSPATH.
 
 if echo "$SHELL" | grep -qE 'bash|zsh'; then
   echo "source $KIBRARY_BIN/init_bash.sh"
