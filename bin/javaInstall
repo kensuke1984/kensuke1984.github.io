@@ -51,8 +51,8 @@ if  echo "$OS" | grep -qvE "Darwin|Linux" ; then
 fi
 
 case "$OS" in
-  "Linux" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz ;;
-  "Darwin" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-macosx-x64.dmg ;;
+  "Linux" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u112-b15/jdk-8u112-linux-x64.tar.gz ;;
+  "Darwin" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u112-b16/jdk-8u112-macosx-x64.dmg ;;
 esac
 
 if which wget >&/dev/null; then

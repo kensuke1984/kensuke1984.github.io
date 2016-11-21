@@ -50,17 +50,21 @@ print_get_java(){
 }
 
 latest_version=\
-$( (curl -s http://java.com/en/download/installed8.jsp 2>/dev/null || wget -q -O - http://java.com/en/download/installed8.jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); print $2}')
+$( (curl -s -L http://java.com/en/download/installed8.jsp 2>/dev/null || wget -q -O - http://java.com/en/download/installed8.jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); print $2}')
 latest_version_final_number=${latest_version#1.8.0_}
 
 if which "$JAVA" >&/dev/null; then
   version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
   version_final_number=${version#1.8.0_}
+else
+  printf "Java Runtime Environment is not found.\n"
 fi
-
+	
 if which "$JAVAC" >&/dev/null; then
   javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
   javac_version_final_number=${javac_version#1.8.0_}
+elif [ -z "$FLG_R" ]; then
+  printf "Java compiler is not found.\n"
 fi
 
 if [ -n "$FLG_I" ]; then
@@ -68,7 +72,6 @@ if [ -n "$FLG_I" ]; then
     printf "javac %s\n" "$javac_version"
   exit 0
 fi
-
 
 if echo "$version" | grep -q '1.8.0_'; then
   echo "Yes, we can run ANISOtime."
@@ -99,7 +102,10 @@ if echo "$version" | grep -q '1.8.0_'; then
     exit 1
   fi
 else
-  echo "It cannot run ANISOtime." 
+  echo "You cannot run ANISOtime." 
+  if [ -n "$version" ]; then
+    printf "Installed Java version is \033[1;31m%s\033[m. You need \033[4mJava 8\033[m.\n" "$version"
+  fi
   print_get_java
   exit 1
 fi
