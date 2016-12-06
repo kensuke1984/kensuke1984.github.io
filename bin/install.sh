@@ -97,8 +97,8 @@ else
   wget -q https://kensuke1984.github.io/gradlew.tar
 fi
 tar xf gradlew.tar
-./gradlew -q >/dev/null
-./gradlew -q build 2>/dev/null 
+./gradlew --no-daemon -q >/dev/null
+./gradlew --no-daemon -q build 2>/dev/null 
 
 if [ $? -eq 0 ]; then
   mv build/libs/kibrary*jar "$KIBRARY_BIN" 
