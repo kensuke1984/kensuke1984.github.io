@@ -55,11 +55,15 @@ if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN"/anisotime https://kensuke1984.github.io/bin/anisotime
   curl -s -o "$KIBRARY_BIN"/javaCheck.jar https://kensuke1984.github.io/bin/javaCheck.jar
   curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
+  curl -s -o "$KIBRARY_BIN"/kibrary_property https://kensuke1984.github.io/bin/kibrary_property
+  curl -s -o "$KIBRARY_BIN"/kibrary_operation https://kensuke1984.github.io/bin/kibrary_operation
 else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaInstall
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary_property
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary_operation
   wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
 fi
 
