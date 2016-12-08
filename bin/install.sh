@@ -71,6 +71,8 @@ chmod +x "$KIBRARY_BIN/javaCheck"
 chmod +x "$KIBRARY_BIN/javaInstall"
 chmod +x "$KIBRARY_BIN/anisotime"
 chmod +x "$KIBRARY_BIN/javaCheck.jar"
+chmod +x "$KIBRARY_BIN/kibrary_property"
+chmod +x "$KIBRARY_BIN/kibrary_operation"
 
 if ! "$KIBRARY_BIN"/javaCheck -r >&/dev/null; then
   if !  ${KIBRARY_BIN}/javaInstall -f >&/dev/null; then
