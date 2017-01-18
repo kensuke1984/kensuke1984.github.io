@@ -51,8 +51,8 @@ if  echo "$OS" | grep -qvE "Darwin|Linux" ; then
 fi
 
 case "$OS" in
-  "Linux" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u112-b15/jdk-8u112-linux-x64.tar.gz ;;
-  "Darwin" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u112-b16/jdk-8u112-macosx-x64.dmg ;;
+  "Linux" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-x64.tar.gz ;;
+  "Darwin" ) javaURL=http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-macosx-x64.dmg ;;
 esac
 
 if which wget >&/dev/null; then
@@ -78,6 +78,7 @@ if [ "$OS" = "Linux" ]; then
   tar -xf /tmp/javaInstaller.tar
   ln -sTf "$(ls -dt jdk* | head -n1)" latest
   rm /tmp/javaInstaller.tar
+  printf "Java ($(ls -dt jdk* | head -n1)) is installed in $KIBRARY_JAVA_HOME\n"
 fi
 
 if [ "$OS" = "Darwin" ]; then
