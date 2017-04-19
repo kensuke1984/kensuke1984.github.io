@@ -57,7 +57,7 @@ if [ $downloader = "curl" ]; then
   curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
   curl -s -o "$KIBRARY_BIN"/kibrary_property https://kensuke1984.github.io/bin/kibrary_property
   curl -s -o "$KIBRARY_BIN"/kibrary_operation https://kensuke1984.github.io/bin/kibrary_operation
-  curl -s -o "$KIBRARY_BIN"/kibrary_operation https://kensuke1984.github.io/bin/oracle_javase_url
+  curl -s -o "$KIBRARY_BIN"/oracle_javase_url https://kensuke1984.github.io/bin/oracle_javase_url
 else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaInstall
@@ -65,8 +65,8 @@ else
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary_property
   wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary_operation
+  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/oracle_javase_url
   wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
-  wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/oracle_javase_url
 fi
 
 chmod +x "$KIBRARY_BIN/javaCheck"
