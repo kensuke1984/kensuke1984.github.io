@@ -1,0 +1,31 @@
+#!/bin/sh
+
+baseurl='http://www.oracle.com/technetwork/java/javase/downloads'
+
+line=$(curl $baseurl/index.html 2>/dev/null | \
+grep 'href' | grep 'Java SE 8u') 
+name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
+version=$(awk '{print $3}' <<<$name)
+page=$(perl -pe 's/.*href="//' <<< $line | perl -pe 's/html".+$/html/')
+
+downloadpage="http://www.oracle.com$page"
+if which wget >&/dev/null; then
+  downloaded=$(wget -q -O - $downloadpage)
+elif which curl >&/dev/null; then
+  downloaded=$(curl -q $downloadpage)
+fi
+
+osx=$(cat <<<"$downloaded" | \
+grep "downloads" | grep "Mac OS X" | grep -v 'demo' | grep -E -o 'http.*dmg')
+
+linux=$(cat <<<"$downloaded" | \
+grep "downloads" | grep "Linux x64" | grep 'tar.gz' | grep -v 'demo' | grep -E -o 'http.*tar.gz')
+
+OS=$(uname)
+
+case "$OS" in
+  "Linux" ) javaURL="$linux" ;;
+  "Darwin" ) javaURL="$osx" ;;
+esac
+
+printf "%s\n" $javaURL
