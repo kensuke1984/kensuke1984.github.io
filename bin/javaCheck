@@ -24,8 +24,8 @@ do
   esac
 done
 
-if [ -n "$FLG_K" -a -n "$FLG_P" ]; then
-  echo "-k and -p can not be used simultaneously."
+if [ -n "$FLG_K" ] && [ -n "$FLG_P" ]; then
+  echo " -k and -p can not be used simultaneously."
   exit 1
 fi
 
@@ -38,14 +38,14 @@ if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
     . "$HOME"/.Kibrary/bin/.kibraryrc -- || return 1
   fi
 else
-  printf "No file for variables. Please reinstall Kibrary.\n" 1>&2
+  printf "No file for variables. Please reinstall Kibrary.\\n" 1>&2
   exit 71
 fi
 
 print_get_java(){
-  printf "Get the latest Java \033[1;31m%s\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" "$latest_version" 1>&2
-  printf "If you want to install automatically, launch the script as below (copy and paste):\n" 1>&2
-  printf "%s\n" "$KIBRARY_BIN/javaInstall" 1>&2
+  printf "Get the latest Java \\033[1;31m%s\\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\\n" "$latest_version" 1>&2
+  printf "If you want to install automatically, launch the script as below (copy and paste):\\n" 1>&2
+  printf "%s\\n" "$KIBRARY_BIN/javaInstall" 1>&2
   return
 }
 
@@ -57,26 +57,26 @@ if which "$JAVA" >&/dev/null; then
   version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
   version_final_number=${version#1.8.0_}
 else
-  printf "Java Runtime Environment is not found.\n"
+  printf "Java Runtime Environment is not found.\\n"
 fi
 	
 if which "$JAVAC" >&/dev/null; then
   javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
   javac_version_final_number=${javac_version#1.8.0_}
 elif [ -z "$FLG_R" ]; then
-  printf "Java compiler is not found.\n"
+  printf "Java compiler is not found.\\n"
 fi
 
 if [ -n "$FLG_I" ]; then
-    printf "java %s\n" "$version"
-    printf "javac %s\n" "$javac_version"
+    printf "java %s\\n" "$version"
+    printf "javac %s\\n" "$javac_version"
   exit 0
 fi
 
 if echo "$version" | grep -q '1.8.0_'; then
   echo "Yes, we can run ANISOtime."
   if [ "$version_final_number" -lt "$latest_version_final_number" ]; then
-    printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$version" "$latest_version"
+    printf "\\033[4mHowever\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$version" "$latest_version"
     print_get_java
     if [ -n "$FLG_L" ]; then
       exit 2
@@ -90,7 +90,7 @@ if echo "$version" | grep -q '1.8.0_'; then
   if echo "$javac_version" | grep -q '1.8.0_'; then
     echo "Yes, we can compile ANISOtime."
     if [ "$javac_version_final_number" -lt "$latest_version_final_number" ]; then
-      printf "\033[4mHowever\e[m, its version \033[1;31m%s\033[m may not be the latest \033[1;31m%s\033[m.\n" "$javac_version" "$latest_version"
+      printf "\\033[4mHowever\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$javac_version" "$latest_version"
       print_get_java
       if [ -n "$FLG_L" ]; then
         exit 2
@@ -104,7 +104,7 @@ if echo "$version" | grep -q '1.8.0_'; then
 else
   echo "You cannot run ANISOtime." 
   if [ -n "$version" ]; then
-    printf "Installed Java version is \033[1;31m%s\033[m. You need \033[4mJava 8\033[m.\n" "$version"
+    printf "Installed Java version is \\033[1;31m%s\033[m. You need \\033[4mJava 8\\033[m.\\n" "$version"
   fi
   print_get_java
   exit 1

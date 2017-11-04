@@ -1,31 +1,65 @@
 #!/bin/sh
+set -o posix
+usage_exit() {
+  echo "Usage: $0 [-l] [-m] " 1>&2
+  echo "Returns the install URL of Java from Oracle."
+  echo "  -l Returns the URL for Linux."
+  echo "  -m Returns the URL for macOS."
+  echo "If there is no option then the URL for this computer is returned."
+  echo "Only one option can be used."
+  exit 1
+}
+
+while getopts ml OPT
+do
+  case $OPT in
+    "m" ) readonly FLG_M="TRUE" ;;
+    "l" ) readonly FLG_L="TRUE" ;;
+    "?" ) usage_exit;;
+  esac
+done
+
+if [ -n "$FLG_M" ] && [ -n "$FLG_L" ]; then
+ echo " -l and -m can not be used simultaneously."
+ exit 2
+fi
 
 baseurl='http://www.oracle.com/technetwork/java/javase/downloads'
 
 line=$(curl $baseurl/index.html 2>/dev/null | \
 grep 'href' | grep 'Java SE 8u') 
-name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
-version=$(awk '{print $3}' <<<$name)
-page=$(perl -pe 's/.*href="//' <<< $line | perl -pe 's/html".+$/html/')
+#name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
+#version=$(awk '{print $3}' <<<$name)
+page=$(perl -pe 's/.*href="//' <<<"$line" | perl -pe 's/html".+$/html/')
 
 downloadpage="http://www.oracle.com$page"
 if which wget >&/dev/null; then
-  downloaded=$(wget -q -O - $downloadpage)
+  downloaded=$(wget -q -O - "$downloadpage")
 elif which curl >&/dev/null; then
-  downloaded=$(curl -q $downloadpage)
+  downloaded=$(curl -q "$downloadpage")
 fi
 
-osx=$(cat <<<"$downloaded" | \
-grep "downloads" | grep "Mac OS X" | grep -v 'demo' | grep -E -o 'http.*dmg')
+mac=$(cat <<<"$downloaded" | \
+grep "downloads" | grep "macOS" | grep -v 'demo' | grep -E -o 'http.*dmg' | tail -1)
 
 linux=$(cat <<<"$downloaded" | \
-grep "downloads" | grep "Linux x64" | grep 'tar.gz' | grep -v 'demo' | grep -E -o 'http.*tar.gz')
+grep "downloads" | grep "Linux x64" | grep -v 'demo' | grep -E -o 'http.*tar.gz' | tail -1)
 
 OS=$(uname)
 
 case "$OS" in
   "Linux" ) javaURL="$linux" ;;
-  "Darwin" ) javaURL="$osx" ;;
+  "Darwin" ) javaURL="$mac" ;;
 esac
 
-printf "%s\n" $javaURL
+if [ -n "$FLG_M" ]; then
+  printf "%s\\n" "$mac"
+elif [ -n "$FLG_L" ]; then
+  printf "%s\\n" "$linux"
+else
+  printf "%s\\n" "$javaURL"
+fi
+
+
+
+
