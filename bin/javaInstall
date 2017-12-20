@@ -26,9 +26,9 @@ fi
 mkdir -p "$KIBRARY_JAVA_HOME"
 cd "$KIBRARY_JAVA_HOME" || exit 2
 
-"${KIBRARY_BIN}/javaCheck" -kl >&/dev/null && exit 255
+"${KIBRARY_BIN}/javaCheck" -kl >/dev/null 2>&1 && exit 255
 
-if "${KIBRARY_BIN}/javaCheck" -pl >&/dev/null; then
+if "${KIBRARY_BIN}/javaCheck" -pl >/dev/null 2>&1; then
   ln -s "$(dirname $(dirname $(readlink -f $(which java))))" "${KIBRARY_JAVA_HOME}"
   ln -sTf "$(ls -dt ${KIBRARY_JAVA_HOME}/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
   echo "The latest Java is found. Links to the Java home is created in Kibrary."

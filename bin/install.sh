@@ -14,12 +14,12 @@ do
   esac
 done
 
-if which curl >&/dev/null; then
+if which curl >/dev/null 2>&1; then
   downloader=curl
-elif which wget >&/dev/null; then
+elif which wget >/dev/null 2>&1; then
   downloader=wget
 else
-  printf "No downloader is found. Install \e[31mGNU Wget\e[m (\e[4mhttps://www.gnu.org/software/wget/\e[m) or \e[31mcurl\e[m (\e[4mhttps://curl.haxx.se/\e[m), otherwise please download the latest Kibrary manually.\n"
+  printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
   exit 3
 fi
 
@@ -27,6 +27,8 @@ if [ $FLG_F ]; then
   rm -rf "$KIBRARY_HOME"
 fi
 
+githubio='https://kensuke1984.github.io'
+gitbin="$githubio/bin"
 if [ ! -e "$KIBRARY_HOME" ]; then
   mkdir -p "$KIBRARY_BIN"
   mkdir "$KIBRARY_SHARE"
@@ -36,11 +38,11 @@ if [ ! -e "$KIBRARY_HOME" ]; then
     exit 1 
   fi
 else
-  printf "%s already exists. If you want to do a clean install, please add an option \e[4;31m-f\e[m as below:\n" "$KIBRARY_HOME" 
+  printf "%s already exists. If you want to do a clean install, please add an option \\e[4;31m-f\\e[m as below:\\n" "$KIBRARY_HOME" 
   if [ $downloader = "curl" ]; then
-    echo "curl -s http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
+    echo "curl -s $githubio/bin/install.sh | /bin/sh -s -- -f"
   else
-    echo "wget -q -O - http://kensuke1984.github.io/bin/install.sh | /bin/sh -s -- -f"
+    echo "wget -q -O - $githubio/bin/install.sh | /bin/sh -s -- -f"
   fi
   return 2>/dev/null
   exit 2
@@ -50,23 +52,23 @@ cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; e
 
 #bin
 if [ $downloader = "curl" ]; then
-  curl -s -o "$KIBRARY_BIN"/javaCheck https://kensuke1984.github.io/bin/javaCheck
-  curl -s -o "$KIBRARY_BIN"/javaInstall https://kensuke1984.github.io/bin/javaInstall
-  curl -s -o "$KIBRARY_BIN"/anisotime https://kensuke1984.github.io/bin/anisotime
-  curl -s -o "$KIBRARY_BIN"/javaCheck.jar https://kensuke1984.github.io/bin/javaCheck.jar
-  curl -s -o "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
-  curl -s -o "$KIBRARY_BIN"/kibrary_property https://kensuke1984.github.io/bin/kibrary_property
-  curl -s -o "$KIBRARY_BIN"/kibrary_operation https://kensuke1984.github.io/bin/kibrary_operation
-  curl -s -o "$KIBRARY_BIN"/oracle_javase_url https://kensuke1984.github.io/bin/oracle_javase_url
+  curl -s -o "$KIBRARY_BIN"/javaCheck "$gitbin"/javaCheck
+  curl -s -o "$KIBRARY_BIN"/javaInstall "$gitbin"/javaInstall
+  curl -s -o "$KIBRARY_BIN"/anisotime "$gitbin"/anisotime
+  curl -s -o "$KIBRARY_BIN"/javaCheck.jar "$gitbin"/javaCheck.jar
+  curl -s -o "$KIBRARY_BIN"/.kibraryrc "$gitbin"/kibraryrc
+  curl -s -o "$KIBRARY_BIN"/kibrary_property "$gitbin"/kibrary_property
+  curl -s -o "$KIBRARY_BIN"/kibrary_operation "$gitbin"/kibrary_operation
+  curl -s -o "$KIBRARY_BIN"/oracle_javase_url "$gitbin"/oracle_javase_url
 else
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaInstall
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/anisotime
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/javaCheck.jar
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary_property
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary_operation
-  wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/oracle_javase_url
-  wget -q -O "$KIBRARY_BIN"/.kibraryrc https://kensuke1984.github.io/bin/kibraryrc
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/javaCheck
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/javaInstall
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/anisotime
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/javaCheck.jar
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/kibrary_property
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/kibrary_operation
+  wget -q -P "$KIBRARY_BIN" "$gitbin"/oracle_javase_url
+  wget -q -O "$KIBRARY_BIN"/.kibraryrc "$gitbin"/kibraryrc
 fi
 
 chmod +x "$KIBRARY_BIN/javaCheck"
@@ -77,20 +79,20 @@ chmod +x "$KIBRARY_BIN/kibrary_property"
 chmod +x "$KIBRARY_BIN/kibrary_operation"
 chmod +x "$KIBRARY_BIN/oracle_javase_url"
 
-if ! "$KIBRARY_BIN"/javaCheck -r >&/dev/null; then
-  if !  ${KIBRARY_BIN}/javaInstall -f >&/dev/null; then
+if ! "$KIBRARY_BIN"/javaCheck -r >/dev/null 2>&1; then
+  if ! "${KIBRARY_BIN}/javaInstall" -f >/dev/null 2>&1; then
     echo "Java is not found and cannot be installed. ANISOtime installation cancelled."
     exit 1
   fi
 fi
 
-if ! "$KIBRARY_BIN"/javaCheck >&/dev/null; then
-  if ! ${KIBRARY_BIN}/javaInstall -f >&/dev/null; then
+if ! "$KIBRARY_BIN"/javaCheck >/dev/null 2>&1; then
+  if ! "${KIBRARY_BIN}/javaInstall" -f >/dev/null 2>&1; then
     echo "Due to a failure of building Kibrary, downloading the latest binary release.";
     if [ $downloader = "curl" ]; then
-      curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/bin/kibrary-latest.jar
+      curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar
     else
-      wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/bin/kibrary-latest.jar
+      wget -q -P "$KIBRARY_BIN" "$gitbin"/kibrary-latest.jar
     fi
     exit 1
   fi
@@ -101,9 +103,9 @@ fi
 #Build Kibrary
 echo "Kibrary is in $KIBRARY_HOME"
 if [ $downloader = "curl" ]; then
-  curl -s -o gradlew.tar https://kensuke1984.github.io/gradlew.tar
+  curl -s -o gradlew.tar "$githubio"/gradlew.tar
 else
-  wget -q https://kensuke1984.github.io/gradlew.tar
+  wget -q "$githubio"/gradlew.tar
 fi
 tar xf gradlew.tar
 ./gradlew --no-daemon -q >/dev/null
@@ -114,9 +116,9 @@ if [ $? -eq 0 ]; then
 else
   echo "Due to a failure of building Kibrary, downloading the latest binary release.";
   if [ $downloader = "curl" ]; then
-    curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" https://kensuke1984.github.io/kibrary-latest.jar
+    curl -s -o "$KIBRARY_BIN/kibrary-latest.jar" "$githubio"/kibrary-latest.jar
   else
-    wget -q -P "$KIBRARY_BIN" https://kensuke1984.github.io/kibrary-latest.jar
+    wget -q -P "$KIBRARY_BIN" "$githubio"/kibrary-latest.jar
   fi
 fi 
 

@@ -24,7 +24,7 @@ if [ -n "$FLG_M" ] && [ -n "$FLG_L" ]; then
  exit 2
 fi
 
-baseurl='http://www.oracle.com/technetwork/java/javase/downloads'
+baseurl='https://www.oracle.com/technetwork/java/javase/downloads'
 
 line=$(curl $baseurl/index.html 2>/dev/null | \
 grep 'href' | grep 'Java SE 8u') 
@@ -32,10 +32,10 @@ grep 'href' | grep 'Java SE 8u')
 #version=$(awk '{print $3}' <<<$name)
 page=$(perl -pe 's/.*href="//' <<<"$line" | perl -pe 's/html".+$/html/')
 
-downloadpage="http://www.oracle.com$page"
-if which wget >&/dev/null; then
+downloadpage="https://www.oracle.com$page"
+if which wget >/dev/null 2>&1; then
   downloaded=$(wget -q -O - "$downloadpage")
-elif which curl >&/dev/null; then
+elif which curl >/dev/null 2>&1; then
   downloaded=$(curl -q "$downloadpage")
 fi
 

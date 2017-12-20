@@ -9,8 +9,8 @@ do
   esac
 done
 
-if [ -n "$FLG_K" -a -n "$FLG_P" ]; then
-  echo "-k and -p can not be used simultaneously."
+if [ -n "$FLG_K" ] && [ -n "$FLG_P" ]; then
+  echo " -k and -p can not be used simultaneously."
 fi
 
 readonly KIBRARY_HOME="$HOME/.Kibrary"

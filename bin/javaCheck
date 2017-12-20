@@ -43,24 +43,31 @@ else
 fi
 
 print_get_java(){
-  printf "Get the latest Java \\033[1;31m%s\\033[m from Oracle (http://www.oracle.com/technetwork/java/javase/downloads/index.html).\\n" "$latest_version" 1>&2
+  printf "Get the latest Java \\033[1;31m%s\\033[m from Oracle (https://www.oracle.com/technetwork/java/javase/downloads/index.html).\\n" "$latest_version" 1>&2
   printf "If you want to install automatically, launch the script as below (copy and paste):\\n" 1>&2
   printf "%s\\n" "$KIBRARY_BIN/javaInstall" 1>&2
   return
 }
 
+jsp='https://java.com/en/download/installed8.jsp'
 latest_version=\
-$( (curl -s -L http://java.com/en/download/installed8.jsp 2>/dev/null || wget -q -O - http://java.com/en/download/installed8.jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); print $2}')
+$( (curl -s -L $jsp || wget -q -O - $jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); print $2}')
 latest_version_final_number=${latest_version#1.8.0_}
 
-if which "$JAVA" >&/dev/null; then
+if which "$JAVA" 1>/dev/null 2>&1; then
   version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
+  if echo "$version" |grep -q '^9'; then 
+    printf "It's amaging that you use Java 9!\\n"
+    printf "I am sorry, however, a bit afraid of the compatibility.\\n"
+    printf "Please set \$JAVA the latest Java 8. I will catch up soon.\\n"
+    exit 9
+  fi 
   version_final_number=${version#1.8.0_}
 else
   printf "Java Runtime Environment is not found.\\n"
 fi
 	
-if which "$JAVAC" >&/dev/null; then
+if which "$JAVAC" 1>/dev/null 2>&1; then
   javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
   javac_version_final_number=${javac_version#1.8.0_}
 elif [ -z "$FLG_R" ]; then
@@ -68,8 +75,8 @@ elif [ -z "$FLG_R" ]; then
 fi
 
 if [ -n "$FLG_I" ]; then
-    printf "java %s\\n" "$version"
-    printf "javac %s\\n" "$javac_version"
+  printf "java %s\\n" "$version"
+  printf "javac %s\\n" "$javac_version"
   exit 0
 fi
 
@@ -104,7 +111,7 @@ if echo "$version" | grep -q '1.8.0_'; then
 else
   echo "You cannot run ANISOtime." 
   if [ -n "$version" ]; then
-    printf "Installed Java version is \\033[1;31m%s\033[m. You need \\033[4mJava 8\\033[m.\\n" "$version"
+    printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$version"
   fi
   print_get_java
   exit 1
