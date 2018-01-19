@@ -29,40 +29,43 @@ cd "$KIBRARY_JAVA_HOME" || exit 2
 "${KIBRARY_BIN}/javaCheck" -kl >/dev/null 2>&1 && exit 255
 
 if "${KIBRARY_BIN}/javaCheck" -pl >/dev/null 2>&1; then
-  ln -s "$(dirname $(dirname $(readlink -f $(which java))))" "${KIBRARY_JAVA_HOME}"
+  ln -s "$(dirname "$(dirname "$(readlink -f "$(which java)")")")" "${KIBRARY_JAVA_HOME}"
   ln -sTf "$(ls -dt ${KIBRARY_JAVA_HOME}/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
   echo "The latest Java is found. Links to the Java home is created in Kibrary."
   exit 255
 fi
 
 if [ -z "$FLG_F" ]; then
-  printf "Do you want to install the latest Java by Oracle in %s (yes/no)\\n" "$KIBRARY_DIR"
+  printf "Do you want to install the latest Java by Oracle? (yes/no)\\n"
   read -r ans
   if [ "$ans" != "yes" ]; then
     exit 1
   fi
 fi
 
-if  echo "$OS" | grep -qvE "Darwin|Linux" ; then
+if echo "$OS" | grep -qvE "Darwin|Linux" ; then
   echo "I am not familiar with $OS. Sorry. Install Java by yourself, would you."
   exit 2
 fi
 
 javaURL=$(oracle_javase_url)
 
-if which wget >&/dev/null; then
+dmg='/tmp/javaInstaller.dmg'
+tar='/tmp/javaInstaller.tar'
+cookie='Cookie: oraclelicense=accept-securebackup-cookie'
+if which wget >/dev/null 2>&1; then
   if [ "$OS" = "Linux" ]; then
-    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" -O /tmp/javaInstaller.tar "$javaURL"
+    wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$tar" "$javaURL"
   fi
   if [ "$OS" = "Darwin" ]; then
-    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" -O /tmp/javaInstaller.dmg "$javaURL"
+    wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$dmg" "$javaURL"
   fi
-elif which curl >&/dev/null; then
+elif which curl >/dev/null 2>&1; then
   if [ "$OS" = "Linux" ]; then
-    curl -s -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/javaInstaller.tar "$javaURL"
+    curl -s -j -k -L -H "$cookie" -o "$tar" "$javaURL"
   fi
   if [ "$OS" = "Darwin" ]; then
-    curl -s -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/javaInstaller.dmg "$javaURL"
+    curl -s -j -k -L -H "$cookie" -o "$dmg" "$javaURL"
   fi
 else
   printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
@@ -70,19 +73,19 @@ else
 fi
 
 if [ "$OS" = "Linux" ]; then
-  tar -xf /tmp/javaInstaller.tar
+  tar -xf "$tar"
   latest="$(ls -dt jdk* | head -n1)"
   ln -sTf "$latest" latest
-  rm /tmp/javaInstaller.tar
+  rm "$tar"
   printf "Java (%s) is installed in $KIBRARY_JAVA_HOME.\\n" "$latest"
 fi
 
 if [ "$OS" = "Darwin" ]; then
-  MOUNTDIR=$(hdiutil mount /tmp/javaInstaller.dmg | tail -1 \
+  MOUNTDIR=$(hdiutil mount "$dmg" | tail -1 \
   | awk '{$1=$2=""; print $0}' | xargs ) && \
   sudo installer -pkg "${MOUNTDIR}/"*.pkg -target / 
-  hdiutil unmount "${MOUNTDIR}"
-  rm /tmp/javaInstaller.dmg
+  hdiutil unmount "$MOUNTDIR"
+  rm "$dmg"
   printf "Java is installed.\\n"
 fi
 

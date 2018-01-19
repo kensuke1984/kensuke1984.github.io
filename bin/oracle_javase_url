@@ -26,23 +26,28 @@ fi
 
 baseurl='https://www.oracle.com/technetwork/java/javase/downloads'
 
-line=$(curl $baseurl/index.html 2>/dev/null | \
-grep 'href' | grep 'Java SE 8u') 
+if which wget >/dev/null 2>&1; then
+  line=$(wget -q -O - $baseurl/index.html |\
+   grep 'href' | grep 'Java SE 8u') 
+elif which curl >/dev/null 2>&1; then
+  line=$(curl -L -s $baseurl/index.html |\
+   grep 'href' | grep 'Java SE 8u') 
+fi
+page=$(echo "$line" | perl -pe 's/.*href="//' | perl -pe 's/html".+$/html/')
 #name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
 #version=$(awk '{print $3}' <<<$name)
-page=$(perl -pe 's/.*href="//' <<<"$line" | perl -pe 's/html".+$/html/')
 
 downloadpage="https://www.oracle.com$page"
 if which wget >/dev/null 2>&1; then
   downloaded=$(wget -q -O - "$downloadpage")
 elif which curl >/dev/null 2>&1; then
-  downloaded=$(curl -q "$downloadpage")
+  downloaded=$(curl -s "$downloadpage")
 fi
 
-mac=$(cat <<<"$downloaded" | \
+mac=$(echo "$downloaded" |\
 grep "downloads" | grep "macOS" | grep -v 'demo' | grep -E -o 'http.*dmg' | tail -1)
 
-linux=$(cat <<<"$downloaded" | \
+linux=$(echo "$downloaded" |\
 grep "downloads" | grep "Linux x64" | grep -v 'demo' | grep -E -o 'http.*tar.gz' | tail -1)
 
 OS=$(uname)
