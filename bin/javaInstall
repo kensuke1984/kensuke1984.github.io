@@ -50,8 +50,8 @@ fi
 
 javaURL=$(oracle_javase_url)
 
-dmg='/tmp/javaInstaller.dmg'
-tar='/tmp/javaInstaller.tar'
+dmg=$(mktemp --suffix=.dmg)
+tar=$(mktemp --suffix=.tar)
 cookie='Cookie: oraclelicense=accept-securebackup-cookie'
 if which wget >/dev/null 2>&1; then
   if [ "$OS" = "Linux" ]; then
