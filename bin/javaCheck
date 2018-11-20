@@ -65,20 +65,20 @@ if which "$JAVA" 1>/dev/null 2>&1; then
     printf "It's amaging that you use Java 9!\\n"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     printf "It is NOT an LTS release.\\n"
-    printf "Please set \$JAVA the latest Java 8.\\n"
+    printf "Please set \$JAVA the latest Java 8. But.. anyway\\n"
     exit 0
   fi 
   if echo "$version" |grep -q '^10'; then 
     printf "It's amaging that you use Java 10!\\n"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     printf "It is NOT an LTS release.\\n"
-    printf "Please set \$JAVA the latest Java 8.\\n"
+    printf "Please set \$JAVA the latest Java 8. But.. anyway\\n"
     exit 0
   fi 
   if echo "$version" |grep -q '^9'; then 
     printf "It's amaging that you use Java 11 (LTS)!\\n"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
-    printf "Please set \$JAVA the latest Java 8. I will catch up soon.\\n"
+    printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
     exit 0
   fi 
   version_final_number=${version#1.8.0_}
