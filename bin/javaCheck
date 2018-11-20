@@ -52,6 +52,11 @@ print_get_java(){
 jsp='https://java.com/en/download/installed8.jsp'
 latest_version=\
 $( (curl -s -L $jsp || wget -q -O - $jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); print $2}')
+
+########### temporary java version 20181120
+latest_version=1.8.0_191
+###########
+
 latest_version_final_number=${latest_version#1.8.0_}
 
 if which "$JAVA" 1>/dev/null 2>&1; then
