@@ -4,11 +4,11 @@ set -o posix
 usage_exit() {
   echo "Usage: $0 [-i] [-r] [-p] [-l] [-k]" 1>&2
   echo "Check the versions of Java in Kibrary if exists, otherwise in PATH"
-  echo "  -r $0 checks if the installed Java can run Kibrary and does not care about the Java compiler. If this option is not specified, $0 also checks if the installed Java compiler can compile Kibrary."
-  echo "  -i prints java and javac version."
-  echo "  -p prints or checks java and javac version in PATH even Kibrary has ones."
-  echo "  -k prints or checks java and javac version in Kibrary, if there are none in Kibrary, always error exits."
-  echo "  -l checks both java and javac not only can run Kibrary but are the latest. If -r option is specified, the version of javac is not checked."
+#  echo "  -r $0 checks if the installed Java can run Kibrary and does not care about the Java compiler. If this option is not specified, $0 also checks if the installed Java compiler can compile Kibrary."
+  echo "  -i prints java and javac version in PATH."
+#  echo "  -p prints or checks java and javac version in PATH even Kibrary has ones."
+#  echo "  -k prints or checks java and javac version in Kibrary, if there are none in Kibrary, always error exits."
+#  echo "  -l checks both java and javac not only can run Kibrary but are the latest. If -r option is specified, the version of javac is not checked."
   exit 1
 }
 
@@ -49,7 +49,29 @@ print_get_java(){
   return
 }
 
-jsp='https://java.com/en/download/installed8.jsp'
+if command -v "$JAVA" 1>/dev/null 2>&1; then
+  java_version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
+else
+  printf "Java Runtime Environment is not found.\\n"
+  exit 250
+fi
+
+if command -v "$JAVAC" 1>/dev/null 2>&1; then
+  javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
+#  javac_version_final_number=${javac_version#1.8.0_}
+elif [ -z "$FLG_R" ]; then
+  printf "Java compiler is not found.\\n"
+  exit 255
+fi
+#echo "$javac_version"
+
+if [ -n "$FLG_I" ]; then
+  printf "java %s\\n" "$java_version"
+  printf "javac %s\\n" "$javac_version"
+  exit 0
+fi
+
+#jsp='https://java.com/en/download/installed8.jsp'
 #latest_version=\
 #$( (curl -s -L $jsp || wget -q -O - $jsp) | awk -F= '/latest8/{gsub(/^[^[:digit:]]*|\x27.*$/, "", $2); #print $2}')
 
@@ -58,37 +80,22 @@ jsp='https://javadl-esd-secure.oracle.com/update/baseline.version'
 #latest_version=1.8.0_191
 latest_version_list=\
 $(curl -s -L $jsp)
-latest_java11_version=$(echo -e "$latest_version_list" | grep '^11')
-latest_java10_version=$(echo -e "$latest_version_list" | grep '^10')
-latest_java9_version=$(echo -e "$latest_version_list" | grep '^9')
-latest_java8_version=$(echo -e "$latest_version_list" | grep '^1\.8')
-latest_java7_version=$(echo -e "$latest_version_list" | grep '^1\.7')
-latest_java6_version=$(echo -e "$latest_version_list" | grep '^1\.6')
-latest_java5_version=$(echo -e "$latest_version_list" | grep '^1\.5')
-latest_java4_version=$(echo -e "$latest_version_list" | grep '^1\.4')
+latest_java11_version=$(echo "$latest_version_list" | grep '^11')
+latest_java10_version=$(echo "$latest_version_list" | grep '^10')
+latest_java9_version=$(echo "$latest_version_list" | grep '^9')
+latest_java8_version=$(echo "$latest_version_list" | grep '^1\.8')
+latest_java7_version=$(echo "$latest_version_list" | grep '^1\.7')
+latest_java6_version=$(echo "$latest_version_list" | grep '^1\.6')
+latest_java5_version=$(echo "$latest_version_list" | grep '^1\.5')
+latest_java4_version=$(echo "$latest_version_list" | grep '^1\.4')
 #exit
-if which "$JAVA" 1>/dev/null 2>&1; then
-  java_version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
-else
-  printf "Java Runtime Environment is not found.\\n"
-  exit 250
-fi
-
-if which "$JAVAC" 1>/dev/null 2>&1; then
-  javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
-#  javac_version_final_number=${javac_version#1.8.0_}
-elif [ -z "$FLG_R" ]; then
-  printf "Java compiler is not found.\\n"
-  exit 255
-fi
-echo "$javac_version"
 
 #  version=11
 case "$java_version" in
 #Java 8
   1.8* )
     printf "You use Java 8 (%s).\\n" "$java_version"
-    if [[ "$latest_java8_version" < "$java_version" ]]; then
+    if [ "$latest_java8_version" = "$java_version" ] || [ "$latest_java8_version" \< "$java_version" ]; then
       exit 0
     else
       printf "It's not latest. Please set \$JAVA the latest Java 8.\\n"
@@ -100,8 +107,9 @@ case "$java_version" in
     printf "It's amaging that you use Java 9 (%s)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     printf "It is NOT an LTS release.\\n"
-    if [[ "$latest_java9_version" < "$java_version" ]]; then
+    if [ "$latest_java9_version" = "$java_version" ] || [ "$latest_java9_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 9.\\n"
+      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
       exit 0
     else
       printf "It's not latest. Please set \$JAVA the latest Java 9.\\n"
@@ -113,8 +121,9 @@ case "$java_version" in
     printf "It's amaging that you use Java 10 (%s)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     printf "It is NOT an LTS release.\\n"
-    if [[ "$latest_java10_version" < "$java_version" ]]; then
+    if [ "$latest_java10_version" = "$java_version" ] || [ "$latest_java10_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 10.\\n"
+      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
       exit 0
     else
       printf "It's not latest. Please set \$JAVA the latest Java 10.\\n"
@@ -125,74 +134,23 @@ case "$java_version" in
   11* )
     printf "It's amaging that you use Java 11 (%s) (LTS)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
-    if [[ "$latest_java11_version" < "$java_version" ]]; then
+    if [ "$latest_java11_version" = "$java_version" ] || [ "$latest_java11_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 11.\\n"
       printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
       exit 0
     else
+      printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java11_version"
       printf "It's not latest. Please set \$JAVA the latest Java 11.\\n"
       exit 11
     fi      
     ;;
   * )
+    printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$java_version"
     print_get_java
     exit 255
     ;;
 esac
-version_final_number=${version#1.8.0_}
 
-exit
-###########
-
-latest_version_final_number=${latest_version#1.8.0_}
-
-
-if [ -n "$FLG_I" ]; then
-  printf "java %s\\n" "$version"
-  printf "javac %s\\n" "$javac_version"
-  exit 0
-fi
-
-
-#
-exit
-
-if echo "$version" | grep -q '1.8.0_'; then
-  echo "Yes, we can run ANISOtime."
-  if [ "$version_final_number" -lt "$latest_version_final_number" ]; then
-    printf "\\033[4mHowever\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$version" "$latest_version"
-    print_get_java
-    if [ -n "$FLG_L" ]; then
-      exit 2
-    fi
-  fi
-
-  if [ -n "$FLG_R" ]; then
-    exit 0
-  fi
-
-  if echo "$javac_version" | grep -q '1.8.0_'; then
-    echo "Yes, we can compile ANISOtime."
-    if [ "$javac_version_final_number" -lt "$latest_version_final_number" ]; then
-      printf "\\033[4mHowever\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$javac_version" "$latest_version"
-      print_get_java
-      if [ -n "$FLG_L" ]; then
-        exit 2
-      fi
-    fi
-    exit 0
-  else
-    echo "It cannot compile ANISOtime." 
-    exit 1
-  fi
-else
-  echo "You cannot run ANISOtime." 
-  if [ -n "$version" ]; then
-    printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$version"
-  fi
-  print_get_java
-  exit 1
-fi
 
 
 
