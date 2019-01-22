@@ -123,9 +123,9 @@ if ./gradlew --no-daemon -q build 2>/dev/null; then
 else
   echo "Due to a failure of building Kibrary, downloading the latest binary release.";
   if [ $downloader = "curl" ]; then
-    curl -s -o "bin/kibrary-latest.jar" "$githubio"/kibrary-latest.jar
+    curl -s -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar
   else
-    wget -q -P bin "$githubio"/kibrary-latest.jar
+    wget -q -P bin "$gitbin"/kibrary-latest.jar
   fi
 fi 
 
