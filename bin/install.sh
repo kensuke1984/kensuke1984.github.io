@@ -6,9 +6,11 @@ readonly DEFAULT_KIBRARY_HOME="$HOME"/.Kibrary
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
 read -r KIBRARY_HOME
-if [ -z "$KIBRARY_HOME" ];then
+
+if [ -z "$KIBRARY_HOME" ]; then
   KIBRARY_HOME="$DEFAULT_KIBRARY_HOME"
 fi
+
 KIBRARY_HOME=$(readlink -f "$KIBRARY_HOME")
 printf "Installing in %s... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn
