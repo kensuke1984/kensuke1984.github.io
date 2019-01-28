@@ -13,7 +13,12 @@ if [ -n "$FLG_K" ] && [ -n "$FLG_P" ]; then
   echo " -k and -p can not be used simultaneously."
 fi
 
-readonly KIBRARY_HOME="$HOME/.Kibrary"
+if [ -z "$KIBRARY_HOME" ]; then
+  echo "KIBRARY_HOME is not set."
+  exit 71
+fi
+
+#readonly KIBRARY_HOME="$HOME/.Kibrary"
 readonly KIBRARY_JAVA_HOME="$KIBRARY_HOME"/java
 readonly KIBRARY_JAVA="$KIBRARY_JAVA_HOME"/latest/bin/java
 readonly KIBRARY_BIN="$KIBRARY_HOME/bin"
@@ -30,7 +35,7 @@ if [ -n "$FLG_K" ]; then
 elif [ -n "$FLG_P" ]; then
   JAVA=java
   JAVAC=javac
-  JAVA_HOME=$(dirname $(dirname java))
+  JAVA_HOME="$(dirname "$(dirname java)")"
 elif [ -e "$KIBRARY_JAVA" ]; then
   JAVA="$KIBRARY_JAVA"
   JAVA_HOME="${KIBRARY_JAVA_HOME}/latest"
@@ -39,6 +44,7 @@ elif [ -z "${JAVA}" ]; then
   JAVA=java
   JAVAC=javac
 fi
-export JAVA_HOME
+
+export JAVA JAVAC JAVA_HOME
 
 return 2>/dev/null
