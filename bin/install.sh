@@ -2,18 +2,27 @@
 #set -e
 set -o posix
 
-readonly DEFAULT_KIBRARY_HOME="$HOME"/.Kibrary
+readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
-read -r KIBRARY_HOME
+read -r KIBRARY_HOME </dev/tty
 
 if [ -z "$KIBRARY_HOME" ]; then
   KIBRARY_HOME="$DEFAULT_KIBRARY_HOME"
 fi
 
-KIBRARY_HOME=$(readlink -f "$KIBRARY_HOME")
+if command -v curl >/dev/null 2>&1; then
+  downloader=curl
+elif command -v wget >/dev/null 2>&1; then
+  downloader=wget
+else
+  printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
+  exit 3
+fi
+
+KIBRARY_HOME="$(readlink -f "$KIBRARY_HOME")"
 printf "Installing in %s... ok? (y/N) " "$KIBRARY_HOME"
-read -r yn
+read -r yn </dev/tty
 case "$yn" in [yY]*)  ;; *) echo "Cancelled." ; exit ;; esac
 
 while getopts f OPT
@@ -25,16 +34,7 @@ do
   esac
 done
 
-if command -v curl >/dev/null 2>&1; then
-  downloader=curl
-elif command -v wget >/dev/null 2>&1; then
-  downloader=wget
-else
-  printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
-  exit 3
-fi
-
-if [ $FLG_F ]; then
+if [ -n "$FLG_F" ]; then
   rm -rf "$KIBRARY_HOME"
 fi
 
@@ -48,7 +48,7 @@ if [ ! -e "$KIBRARY_HOME" ]; then
   fi
 else
   printf "%s already exists. If you want to do a clean install, please add an option \\e[4;31m-f\\e[m as below:\\n" "$KIBRARY_HOME" 
-  if [ $downloader = "curl" ]; then
+  if [ "$downloader" = "curl" ]; then
     echo "curl -s $githubio/bin/install.sh | /bin/sh -s -- -f"
   else
     echo "wget -q -O - $githubio/bin/install.sh | /bin/sh -s -- -f"
@@ -59,6 +59,8 @@ fi
 
 cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; exit 1)
 mkdir bin share
+
+export KIBRARY_HOME
 
 #bin
 if [ $downloader = "curl" ]; then
@@ -172,12 +174,6 @@ fi
 #source $KIBRARY_BIN/init_bash.sh 2>/dev/null || source $KIBRARY_BIN/init_tcsh.sh 2>/dev/null
 #return 2> /dev/null
 exit 0
-
-
-
-
-
-
 
 
 
