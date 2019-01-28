@@ -133,16 +133,22 @@ else
   fi
 fi 
 
-readonly KIBRARY=$(ls bin/kib*jar)
+readonly KIBRARY=$(readlink -e bin/kib*jar)
 
 #bash
-cat <<EOF >bin/init_bash.sh
+cat <<EOF >"$KIBRARY_HOME/bin/init_bash.sh"
+if [ -z "\$KIBRARY_HOME" ]; then
+  echo "KIBRARY_HOME is not set."
+  export KIBRARY_HOME=\$(dirname \$(readlink -e "\$(dirname \$0)"))
+  printf "KIBRARY_HOME is now %s\n" "\$KIBRARY_HOME"
+#  return 71
+fi
 ##classpath
 export CLASSPATH=\$CLASSPATH:$KIBRARY
-export PATH=\$PATH:${KIBRARY_HOME}/bin
-if [ -e ${KIBRARY_HOME}/java/latest/bin ];then
-  export PATH=${KIBRARY_HOME}/java/latest/bin:\$PATH
-  export JAVA_HOME=${KIBRARY_HOME}/java/latest
+export PATH=\$PATH:\${KIBRARY_HOME}/bin
+if [ -e \${KIBRARY_HOME}/java/latest/bin ];then
+  export PATH=\${KIBRARY_HOME}/java/latest/bin:\$PATH
+  export JAVA_HOME=\${KIBRARY_HOME}/java/latest
 fi
 EOF
 
