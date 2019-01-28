@@ -12,6 +12,11 @@ usage_exit() {
   exit 1
 }
 
+if [ -z "$KIBRARY_HOME" ]; then
+  echo "KIBRARY_HOME is not set."
+  exit 71
+fi
+
 while getopts ilrkp OPT
 do
   case $OPT in
@@ -29,13 +34,13 @@ if [ -n "$FLG_K" ] && [ -n "$FLG_P" ]; then
   exit 1
 fi
 
-if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
+if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
   if [ -n "$FLG_K" ]; then
-    . "$HOME"/.Kibrary/bin/.kibraryrc -k || return 1
+    . "$KIBRARY_HOME"/bin/.kibraryrc -k || return 1
   elif [ -n "$FLG_P" ]; then
-    . "$HOME"/.Kibrary/bin/.kibraryrc -p || return 1
+    . "$KIBRARY_HOME"/bin/.kibraryrc -p || return 1
   else
-    . "$HOME"/.Kibrary/bin/.kibraryrc -- || return 1
+    . "$KIBRARY_HOME"/bin/.kibraryrc -- || return 1
   fi
 else
   printf "No file for variables. Please reinstall Kibrary.\\n" 1>&2
