@@ -144,7 +144,7 @@ if [ -z "\$KIBRARY_HOME" ]; then
 #  return 71
 fi
 ##classpath
-export CLASSPATH=\$CLASSPATH:$KIBRARY
+#export CLASSPATH=\$CLASSPATH:$KIBRARY
 export PATH=\$PATH:\${KIBRARY_HOME}/bin
 if [ -e \${KIBRARY_HOME}/java/latest/bin ];then
   export PATH=\${KIBRARY_HOME}/java/latest/bin:\$PATH
@@ -157,11 +157,11 @@ cat <<EOF >"$KIBRARY_HOME/bin/init_tcsh.sh"
 ##classpath
 set opt_set = \$?nonomatch
 set nonomatch
-if ! \$?CLASSPATH then
-  setenv CLASSPATH $KIBRARY
-else
-  setenv CLASSPATH \${CLASSPATH}:$KIBRARY
-endif
+#if ! \$?CLASSPATH then
+#  setenv CLASSPATH $KIBRARY
+#else
+#  setenv CLASSPATH \${CLASSPATH}:$KIBRARY
+#endif
 setenv PATH \${PATH}:$KIBRARY_HOME/bin
 if (\$opt_set == 0) then
   unset nonomatch
