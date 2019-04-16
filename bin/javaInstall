@@ -17,20 +17,19 @@ do
 done
 
 if [ -z "$KIBRARY_HOME" ]; then
-  printf "KIBRARY_HOME is not set.\\n" 1>&2
+  echo "KIBRARY_HOME is not set." 1>&2
   exit 71
 fi
 
 if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
   . "$KIBRARY_HOME"/bin/.kibraryrc || return 1
 else
-  printf "No file for variables. Please reinstall Kibrary.\\n" 1>&2
+  echo "No file for variables. Please reinstall Kibrary." 1>&2
   exit 71
 fi
 
 mkdir -p "$KIBRARY_JAVA_HOME"
 cd "$KIBRARY_JAVA_HOME" || exit 2
-
 "${KIBRARY_BIN}/javaCheck" -kl >/dev/null 2>&1 && exit 255
 
 if "${KIBRARY_BIN}/javaCheck" -pl >/dev/null 2>&1; then
@@ -48,50 +47,46 @@ if [ -z "$FLG_F" ]; then
   fi
 fi
 
-if echo "$OS" | grep -qvE "Darwin|Linux" ; then
+if [ "$OS" = "Linux" ]; then
+  tmpfile=$(mktemp --suffix=.tar)
+elif [ "$OS" = "Darwin" ]; then
+  tmpfile=$(mktemp --suffix=.dmg)
+else
   echo "I am not familiar with $OS. Sorry. Install Java by yourself, would you."
   exit 2
 fi
+#if echo "$OS" | grep -qvE "Darwin|Linux" ; then
+#  exit 2
+#fi
+echo $tmpfile
 
 javaURL=$(oracle_javase_url)
-
-dmg=$(mktemp --suffix=.dmg)
-tar=$(mktemp --suffix=.tar)
 cookie='Cookie: oraclelicense=accept-securebackup-cookie'
+
 if command -v wget >/dev/null 2>&1; then
-  if [ "$OS" = "Linux" ]; then
-    wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$tar" "$javaURL"
-  fi
-  if [ "$OS" = "Darwin" ]; then
-    wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$dmg" "$javaURL"
-  fi
+  wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$tmpfile" "$javaURL"
 elif command -v curl >/dev/null 2>&1; then
-  if [ "$OS" = "Linux" ]; then
-    curl -s -j -k -L -H "$cookie" -o "$tar" "$javaURL"
-  fi
-  if [ "$OS" = "Darwin" ]; then
-    curl -s -j -k -L -H "$cookie" -o "$dmg" "$javaURL"
-  fi
+  curl -s -j -k -L -H "$cookie" -o "$tmpfile" "$javaURL"
 else
   printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
   exit 3
 fi
 
 if [ "$OS" = "Linux" ]; then
-  tar -xf "$tar"
+  tar -xf "$tmpfile"
   latest="$(ls -dt jdk* | head -n1)"
   ln -sTf "$latest" latest
-  rm "$tar"
-  printf "Java (%s) is installed in $KIBRARY_JAVA_HOME.\\n" "$latest"
+  echo "Java ($latest) is installed in $KIBRARY_JAVA_HOME."
 fi
 
 if [ "$OS" = "Darwin" ]; then
-  MOUNTDIR=$(hdiutil mount "$dmg" | tail -1 \
+  MOUNTDIR=$(hdiutil mount "$tmpfile" | tail -1 \
   | awk '{$1=$2=""; print $0}' | xargs ) && \
   sudo installer -pkg "${MOUNTDIR}/"*.pkg -target / 
   hdiutil unmount "$MOUNTDIR"
-  rm "$dmg"
-  printf "Java is installed.\\n"
+  echo "Java is installed."
 fi
+
+rm "$tmpfile"
 
 
