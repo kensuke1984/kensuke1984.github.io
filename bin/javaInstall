@@ -16,10 +16,15 @@ do
   esac
 done
 
-if [ -e "$HOME"/.Kibrary/bin/.kibraryrc ]; then
-  . "$HOME"/.Kibrary/bin/.kibraryrc || return 1
+if [ -z "$KIBRARY_HOME" ]; then
+  printf "KIBRARY_HOME is not set.\\n" 1>&2
+  exit 71
+fi
+
+if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
+  . "$KIBRARY_HOME"/bin/.kibraryrc || return 1
 else
-  printf "No file for variables. Please reinstall Kibrary.\\n"
+  printf "No file for variables. Please reinstall Kibrary.\\n" 1>&2
   exit 71
 fi
 
@@ -29,8 +34,8 @@ cd "$KIBRARY_JAVA_HOME" || exit 2
 "${KIBRARY_BIN}/javaCheck" -kl >/dev/null 2>&1 && exit 255
 
 if "${KIBRARY_BIN}/javaCheck" -pl >/dev/null 2>&1; then
-  ln -s "$(dirname "$(dirname "$(readlink -f "$(which java)")")")" "${KIBRARY_JAVA_HOME}"
-  ln -sTf "$(ls -dt ${KIBRARY_JAVA_HOME}/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
+  ln -s "$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")" "${KIBRARY_JAVA_HOME}"
+  ln -sTf "$(ls -dt "${KIBRARY_JAVA_HOME}"/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
   echo "The latest Java is found. Links to the Java home is created in Kibrary."
   exit 255
 fi
@@ -53,14 +58,14 @@ javaURL=$(oracle_javase_url)
 dmg=$(mktemp --suffix=.dmg)
 tar=$(mktemp --suffix=.tar)
 cookie='Cookie: oraclelicense=accept-securebackup-cookie'
-if which wget >/dev/null 2>&1; then
+if command -v wget >/dev/null 2>&1; then
   if [ "$OS" = "Linux" ]; then
     wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$tar" "$javaURL"
   fi
   if [ "$OS" = "Darwin" ]; then
     wget -q --no-check-certificate --no-cookies --header "$cookie" -O "$dmg" "$javaURL"
   fi
-elif which curl >/dev/null 2>&1; then
+elif command -v curl >/dev/null 2>&1; then
   if [ "$OS" = "Linux" ]; then
     curl -s -j -k -L -H "$cookie" -o "$tar" "$javaURL"
   fi
