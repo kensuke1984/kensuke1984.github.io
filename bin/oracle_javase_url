@@ -26,14 +26,14 @@ fi
 
 baseurl='https://www.oracle.com/technetwork/java/javase/downloads'
 
-if which wget >/dev/null 2>&1; then
+if command -v wget >/dev/null 2>&1; then
   line=$(wget -q -O - $baseurl/index.html |\
    grep 'href' | grep 'Java SE 8u') 
-elif which curl >/dev/null 2>&1; then
+elif command -v curl >/dev/null 2>&1; then
   line=$(curl -L -s $baseurl/index.html |\
    grep 'href' | grep 'Java SE 8u') 
 fi
-page=$(echo "$line" | perl -pe 's/.*href="//' | perl -pe 's/html".+$/html/')
+page=$(echo "$line" | perl -pe 's/.*?href="//' | perl -pe 's/html".+$/html/')
 #name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
 #version=$(awk '{print $3}' <<<$name)
 
