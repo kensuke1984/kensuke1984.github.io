@@ -85,6 +85,7 @@ jsp='https://javadl-esd-secure.oracle.com/update/baseline.version'
 
 latest_version_list=\
 $(curl -s -L $jsp)
+latest_java12_version=$(echo "$latest_version_list" | grep '^12')
 latest_java11_version=$(echo "$latest_version_list" | grep '^11')
 latest_java10_version=$(echo "$latest_version_list" | grep '^10')
 latest_java9_version=$(echo "$latest_version_list" | grep '^9')
@@ -139,6 +140,20 @@ case "$java_version" in
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     if [ "$latest_java11_version" = "$java_version" ] || [ "$latest_java11_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 11.\\n"
+      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
+      exit 0
+    else
+      printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java11_version"
+      printf "It's not latest. Please set \$JAVA the latest Java 11.\\n"
+      exit 11
+    fi      
+    ;;
+#Java 12
+  12* )
+    printf "It's amaging that you use Java 12 (\\033[1;31m%s\\033[m)!\\n" "$java_version"
+    printf "I am sorry, however, a bit afraid of the compatibility.\\n"
+    if [ "$latest_java11_version" = "$java_version" ] || [ "$latest_java11_version" \< "$java_version" ]; then
+      printf "But.. anyway it's the latest Java 12.\\n"
       printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
       exit 0
     else
