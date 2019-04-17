@@ -68,9 +68,6 @@ else
   echo "I am not familiar with $OS. Sorry. Install Java by yourself, would you."
   exit 2
 fi
-#if echo "$OS" | grep -qvE "Darwin|Linux" ; then
-#  exit 2
-#fi
 
 javaURL=$(oracle_javase_url)
 cookie='Cookie: oraclelicense=accept-securebackup-cookie'

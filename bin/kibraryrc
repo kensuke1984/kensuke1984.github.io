@@ -23,7 +23,7 @@ readonly KIBRARY_JAVA_HOME="$KIBRARY_HOME"/java
 readonly KIBRARY_JAVA="$KIBRARY_JAVA_HOME"/latest/bin/java
 readonly KIBRARY_BIN="$KIBRARY_HOME/bin"
 readonly kibrary=$(find "$KIBRARY_BIN" -type f -name 'kib*jar' | tail -n1)
-readonly OS=$(uname)
+#readonly OS=$(uname)
 
 export CLASSPATH="$kibrary"
 export PATH=${KIBRARY_BIN}:$PATH
