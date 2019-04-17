@@ -82,7 +82,7 @@ fi
 
 ########### since 2018/11/21
 jsp='https://javadl-esd-secure.oracle.com/update/baseline.version'
-#latest_version=1.8.0_191
+
 latest_version_list=\
 $(curl -s -L $jsp)
 latest_java11_version=$(echo "$latest_version_list" | grep '^11')
@@ -93,23 +93,21 @@ latest_java7_version=$(echo "$latest_version_list" | grep '^1\.7')
 latest_java6_version=$(echo "$latest_version_list" | grep '^1\.6')
 latest_java5_version=$(echo "$latest_version_list" | grep '^1\.5')
 latest_java4_version=$(echo "$latest_version_list" | grep '^1\.4')
-#exit
 
-#  version=11
 case "$java_version" in
 #Java 8
   1.8* )
-    printf "You use Java 8 (%s).\\n" "$java_version"
+    printf "You use Java 8 (\\033[1;31m%s\\033[m).\\n" "$java_version"
     if [ "$latest_java8_version" = "$java_version" ] || [ "$latest_java8_version" \< "$java_version" ]; then
       exit 0
     else
-      printf "It's not latest. Please set \$JAVA the latest Java 8.\\n"
+      printf "It's not latest. Please set \$JAVA \\033[1;31m%s\\033[m.\\n" "$latest_java8_version"
       exit 8
     fi
      ;;
 #Java 9
   9* )
-    printf "It's amaging that you use Java 9 (%s)!\\n" "$java_version"
+    printf "It's amaging that you use Java 9 (\\033[1;31m%s\\033[m)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     printf "It is NOT an LTS release.\\n"
     if [ "$latest_java9_version" = "$java_version" ] || [ "$latest_java9_version" \< "$java_version" ]; then
@@ -123,7 +121,7 @@ case "$java_version" in
      ;;
 #Java 10 
   10* )
-    printf "It's amaging that you use Java 10 (%s)!\\n" "$java_version"
+    printf "It's amaging that you use Java 10 (\\033[1;31m%s\\033[m)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     printf "It is NOT an LTS release.\\n"
     if [ "$latest_java10_version" = "$java_version" ] || [ "$latest_java10_version" \< "$java_version" ]; then
@@ -137,7 +135,7 @@ case "$java_version" in
     ;; 
 #Java 11
   11* )
-    printf "It's amaging that you use Java 11 (%s) (LTS)!\\n" "$java_version"
+    printf "It's amaging that you use Java 11 (\\033[1;31m%s\\033[m) (LTS)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     if [ "$latest_java11_version" = "$java_version" ] || [ "$latest_java11_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 11.\\n"
