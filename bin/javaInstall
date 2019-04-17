@@ -63,7 +63,7 @@ OS=$(uname)
 if [ "$OS" = "Linux" ]; then
   tmpfile=$(mktemp --suffix=.tar)
 elif [ "$OS" = "Darwin" ]; then
-  tmpfile=$(mktemp --suffix=.dmg)
+  tmpfile="$(mktemp).dmg"
 else
   echo "I am not familiar with $OS. Sorry. Install Java by yourself, would you."
   exit 2
