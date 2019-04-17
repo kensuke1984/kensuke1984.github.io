@@ -27,32 +27,28 @@ fi
 baseurl='https://www.oracle.com/technetwork/java/javase/downloads'
 
 if command -v wget >/dev/null 2>&1; then
-  line=$(wget -q -O - $baseurl/index.html |\
-   grep 'href' | grep 'Java SE 8u') 
+  line=$(wget -q -O - $baseurl/index.html | grep 'JDK12') 
 elif command -v curl >/dev/null 2>&1; then
-  line=$(curl -L -s $baseurl/index.html |\
-   grep 'href' | grep 'Java SE 8u') 
+  line=$(curl -L -s $baseurl/index.html | grep 'JDK12')
 fi
 page=$(echo "$line" | perl -pe 's/.*?href="//' | perl -pe 's/html".+$/html/')
 #name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
 #version=$(awk '{print $3}' <<<$name)
 
 downloadpage="https://www.oracle.com$page"
-if which wget >/dev/null 2>&1; then
+if command -v wget >/dev/null 2>&1; then
   downloaded=$(wget -q -O - "$downloadpage")
-elif which curl >/dev/null 2>&1; then
+elif command -v curl >/dev/null 2>&1; then
   downloaded=$(curl -s "$downloadpage")
 fi
 
 mac=$(echo "$downloaded" |\
-grep "downloads" | grep "macOS" | grep -v 'demo' | grep -E -o 'http.*dmg' | tail -1)
+grep "macOS" | grep -E -o 'https.*dmg' | tail -1)
 
 linux=$(echo "$downloaded" |\
-grep "downloads" | grep "Linux x64" | grep -v 'demo' | grep -E -o 'http.*tar.gz' | tail -1)
+grep "Linux" | grep -E -o 'https.*tar.gz' | tail -1)
 
-OS=$(uname)
-
-case "$OS" in
+case $(uname) in
   "Linux" ) javaURL="$linux" ;;
   "Darwin" ) javaURL="$mac" ;;
 esac

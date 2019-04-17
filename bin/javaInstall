@@ -2,51 +2,64 @@
 set -o posix
 
 usage_exit(){ 
-  echo "Usage: $0 [-f]" 1>&2
+  echo "Usage: $0 [-f][-h][-d dir]" 1>&2
   echo "Java Development kit installer."
-  echo "  -f Install without any prompt."
+  echo "  -d Install Java in '/path/to/dir/java'. Default is 'KIBRARY_HOME/java'."
+  echo "  -f Install Java without any prompt."
+  echo "  -h Show this message."
   exit 1
 }
 
-while getopts f OPT
+INSTALL_VER=12
+
+while getopts d:fh OPT
 do
   case $OPT in
+    "d" ) readonly FLG_D="TRUE" 
+          readonly INSTALL_DIR=$OPTARG;;
     "f" ) readonly FLG_F="TRUE" ;;
-    "?" ) usage_exit;;
+    "h" ) usage_exit;;
   esac
 done
 
-if [ -z "$KIBRARY_HOME" ]; then
-  echo "KIBRARY_HOME is not set." 1>&2
-  exit 71
-fi
+if [ -z $FLG_D ]; then
+  if [ -z "$KIBRARY_HOME" ]; then
+    echo "KIBRARY_HOME is not set." 1>&2
+    exit 71
+  fi
 
-if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
-  . "$KIBRARY_HOME"/bin/.kibraryrc || return 1
+  if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
+    . "$KIBRARY_HOME"/bin/.kibraryrc || return 1
+  else
+    echo "No file for variables. Please reinstall Kibrary." 1>&2
+    exit 71
+  fi
+  
+  mkdir -p "$KIBRARY_JAVA_HOME"
+  cd "$KIBRARY_JAVA_HOME" || exit 2
+  "${KIBRARY_BIN}/javaCheck" -kl >/dev/null 2>&1 && exit 255
+
+  if "${KIBRARY_BIN}/javaCheck" -pl >/dev/null 2>&1; then
+    ln -s "$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")" "${KIBRARY_JAVA_HOME}"
+    ln -sTf "$(ls -dt "${KIBRARY_JAVA_HOME}"/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
+    echo "The latest Java is found. Links to the Java home is created in Kibrary."
+    exit 255
+  fi
+  INSTALL_DIR=$KIBRARY_HOME
 else
-  echo "No file for variables. Please reinstall Kibrary." 1>&2
-  exit 71
-fi
-
-mkdir -p "$KIBRARY_JAVA_HOME"
-cd "$KIBRARY_JAVA_HOME" || exit 2
-"${KIBRARY_BIN}/javaCheck" -kl >/dev/null 2>&1 && exit 255
-
-if "${KIBRARY_BIN}/javaCheck" -pl >/dev/null 2>&1; then
-  ln -s "$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")" "${KIBRARY_JAVA_HOME}"
-  ln -sTf "$(ls -dt "${KIBRARY_JAVA_HOME}"/jdk* | head -n1)" "${KIBRARY_JAVA_HOME}/latest"
-  echo "The latest Java is found. Links to the Java home is created in Kibrary."
-  exit 255
+  mkdir -p "$INSTALL_DIR/java"
+  cd "$INSTALL_DIR/java" || exit 2
 fi
 
 if [ -z "$FLG_F" ]; then
-  printf "Do you want to install the latest Java by Oracle? (yes/no)\\n"
+  printf "Installing Java %s by Oracle in (%s/java)? (yes/no) " "$INSTALL_VER" "$INSTALL_DIR"
   read -r ans
   if [ "$ans" != "yes" ]; then
     exit 1
   fi
 fi
 
+OS=$(uname)
 if [ "$OS" = "Linux" ]; then
   tmpfile=$(mktemp --suffix=.tar)
 elif [ "$OS" = "Darwin" ]; then
@@ -58,7 +71,6 @@ fi
 #if echo "$OS" | grep -qvE "Darwin|Linux" ; then
 #  exit 2
 #fi
-echo $tmpfile
 
 javaURL=$(oracle_javase_url)
 cookie='Cookie: oraclelicense=accept-securebackup-cookie'
@@ -76,7 +88,7 @@ if [ "$OS" = "Linux" ]; then
   tar -xf "$tmpfile"
   latest="$(ls -dt jdk* | head -n1)"
   ln -sTf "$latest" latest
-  echo "Java ($latest) is installed in $KIBRARY_JAVA_HOME."
+  echo "Java ($latest) is installed in $(readlink -f .) ."
 fi
 
 if [ "$OS" = "Darwin" ]; then
