@@ -5,25 +5,36 @@ usage_exit() {
   echo "Returns the install URL of Java from Oracle."
   echo "  -l Returns the URL for Linux."
   echo "  -m Returns the URL for macOS."
+  echo "  -v Sets the Java version (11~, deprecated, default: 13)"
   echo "If there is no option then the URL for this computer is returned."
   echo "Only one option can be used."
   exit 1
 }
 
-while getopts ml OPT
+jdk_version='13'
+
+while getopts mlv: OPT
 do
   case $OPT in
     "m" ) readonly FLG_M="TRUE" ;;
     "l" ) readonly FLG_L="TRUE" ;;
+    "v" ) readonly FLG_V="TRUE" ; jdk_version="$OPTARG" ;;
     "?" ) usage_exit;;
   esac
 done
+
+if [ ! "$jdk_version" -eq '13' ] && [ ! "$jdk_version" -eq '11' ] && [ ! "$jdk_version" -eq '12' ]; then
+  printf "It does not work for Java %s. For only 11, 12 and 13 so far.\n" "$jdk_version"
+  exit 71
+fi
+
 
 if [ -n "$FLG_M" ] && [ -n "$FLG_L" ]; then
  echo " -l and -m can not be used simultaneously."
  exit 2
 fi
 
+version_tag="a name=\"JDK$jdk_version\""
 baseurl='https://www.oracle.com/technetwork/java/javase/downloads'
 
 if command -v wget >/dev/null 2>&1; then
@@ -31,7 +42,7 @@ if command -v wget >/dev/null 2>&1; then
 elif command -v curl >/dev/null 2>&1; then
   line=$(curl -L -s $baseurl/index.html | grep 'JDK12')
 fi
-page=$(echo "$line" | perl -pe 's/.*?href="//' | perl -pe 's/html".+$/html/')
+page=$(echo "$line" | perl -pe "s/.*?${version_tag} href=\"//" | perl -pe 's/html".+$/html/')
 #name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
 #version=$(awk '{print $3}' <<<$name)
 

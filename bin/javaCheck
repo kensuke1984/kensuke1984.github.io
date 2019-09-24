@@ -54,6 +54,12 @@ print_get_java(){
   return
 }
 
+print_set_java8(){
+  printf "Please set \$JAVA the latest Java 8 (\\033[1;31m$latest_java8_version\\033[m), if there's anything wrong. I will catch up soon.\\n"
+  return
+}
+
+
 if command -v "$JAVA" 1>/dev/null 2>&1; then
   java_version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
 else
@@ -113,7 +119,7 @@ case "$java_version" in
     printf "It is NOT an LTS release.\\n"
     if [ "$latest_java9_version" = "$java_version" ] || [ "$latest_java9_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 9.\\n"
-      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
+      print_set_java8
       exit 0
     else
       printf "It's not latest. Please set \$JAVA the latest Java 9.\\n"
@@ -127,7 +133,7 @@ case "$java_version" in
     printf "It is NOT an LTS release.\\n"
     if [ "$latest_java10_version" = "$java_version" ] || [ "$latest_java10_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 10.\\n"
-      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
+      print_set_java8
       exit 0
     else
       printf "It's not latest. Please set \$JAVA the latest Java 10.\\n"
@@ -152,15 +158,34 @@ case "$java_version" in
   12* )
     printf "It's amaging that you use Java 12 (\\033[1;31m%s\\033[m)!\\n" "$java_version"
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
-    if [ "$latest_java11_version" = "$java_version" ] || [ "$latest_java11_version" \< "$java_version" ]; then
+    if [ "$latest_java12_version" = "$java_version" ] || [ "$latest_java12_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 12.\\n"
-      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
+      print_set_java8
       exit 0
     else
-      printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java11_version"
+      printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java12_version"
       printf "It's not latest. Please set \$JAVA the latest Java 11.\\n"
       exit 11
     fi      
+    ;;
+#Java 13
+  13* )
+    printf "It's amaging that you use Java 13 (\\033[1;31m%s\\033[m)!\\n" "$java_version"
+    printf "I am sorry, however, a bit afraid of the compatibility.\\n"
+    if [ "$latest_java13_version" = "$java_version" ] || [ "$latest_java13_version" \< "$java_version" ]; then
+      printf "But.. anyway it's the latest Java 13.\\n"
+      print_set_java8
+      exit 0
+    else
+      printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java13_version"
+      printf "It's not latest. Please set \$JAVA the latest Java 13.\\n"
+      exit 11
+    fi      
+    ;;
+  * )
+    printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$java_version"
+    print_get_java
+    exit 255
     ;;
   * )
     printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$java_version"
