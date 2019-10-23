@@ -13,8 +13,12 @@ usage_exit() {
 }
 
 if [ -z "$KIBRARY_HOME" ]; then
-  echo "KIBRARY_HOME is not set."
-  exit 71
+  printf "KIBRARY_HOME is not set.\n" 1>&2
+  KIBRARY_HOME="$HOME/Kibrary"
+  if [ ! -e "$KIBRARY_HOME" ]; then
+    exit 71
+  fi
+  printf "It is assumed to be %s.\n" "$KIBRARY_HOME" 1>&2
 fi
 
 while getopts ilrkp OPT
@@ -55,7 +59,7 @@ print_get_java(){
 }
 
 print_set_java8(){
-  printf "Please set \$JAVA the latest Java 8 (\\033[1;31m$latest_java8_version\\033[m), if there's anything wrong. I will catch up soon.\\n"
+  printf "Please set \$JAVA the latest Java 8 (\\033[1;31m%s\\033[m), if there's anything wrong. I will catch up soon.\\n" "$latest_java8_version"
   return
 }
 
@@ -92,6 +96,7 @@ jsp='https://javadl-esd-secure.oracle.com/update/baseline.version'
 latest_version_list=\
 $(curl -s -L $jsp)
 latest_java12_version=$(echo "$latest_version_list" | grep '^12')
+latest_java13_version=$(echo "$latest_version_list" | grep '^13')
 latest_java11_version=$(echo "$latest_version_list" | grep '^11')
 latest_java10_version=$(echo "$latest_version_list" | grep '^10')
 latest_java9_version=$(echo "$latest_version_list" | grep '^9')
@@ -181,11 +186,6 @@ case "$java_version" in
       printf "It's not latest. Please set \$JAVA the latest Java 13.\\n"
       exit 11
     fi      
-    ;;
-  * )
-    printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$java_version"
-    print_get_java
-    exit 255
     ;;
   * )
     printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m.\\n" "$java_version"
