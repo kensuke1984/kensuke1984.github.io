@@ -2,6 +2,21 @@
 #set -e
 set -o posix
 
+#Emulates readlink -f hoge
+__readlink_f (){
+  TARGET_FILE=$1
+  if [ "$(echo "$TARGET_FILE" |cut -c 1-2)" = "~/" ]; then
+    TARGET_FILE=$HOME/${TARGET_FILE#\~/}
+  fi
+  while [ "$TARGET_FILE" != "" ]; do
+      cd "$(dirname "$TARGET_FILE")" || exit 60
+      FILENAME="$(basename "$TARGET_FILE")"
+      TARGET_FILE="$(readlink "$FILENAME")"
+  done
+  echo "$(pwd -P)/$FILENAME"
+}
+
+
 readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
@@ -20,11 +35,10 @@ else
   exit 3
 fi
 
-KIBRARY_HOME="$(readlink -f "$KIBRARY_HOME")"
-printf "Installing in %s... ok? (y/N) " "$KIBRARY_HOME"
+KIBRARY_HOME="$(__readlink_f "$KIBRARY_HOME")"
+printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn </dev/tty
 case "$yn" in [yY]*)  ;; *) echo "Cancelled." ; exit ;; esac
-
 while getopts f OPT
 do
   case $OPT in
@@ -133,13 +147,13 @@ else
   fi
 fi 
 
-readonly KIBRARY=$(readlink -e bin/kib*jar)
+readonly KIBRARY=$(__readlink_f bin/kib*jar)
 
 #bash
 cat <<EOF >"$KIBRARY_HOME/bin/init_bash.sh"
 if [ -z "\$KIBRARY_HOME" ]; then
   echo "KIBRARY_HOME is not set."
-  export KIBRARY_HOME=\$(dirname \$(readlink -e "\$(dirname \$0)"))
+  export KIBRARY_HOME=\$(dirname \$(__readlink_f "\$(dirname \$0)"))
   printf "KIBRARY_HOME is now %s\n" "\$KIBRARY_HOME"
 #  return 71
 fi
