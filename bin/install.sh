@@ -5,7 +5,7 @@ set -o posix
 #Emulates readlink -f hoge
 __readlink_f (){
   TARGET_FILE=$1
-  if [ "$(echo "$TARGET_FILE" |cut -c 1-2)" = "~/" ]; then
+  if [ "$(echo "$TARGET_FILE" | cut -c 1-2)" = "~/" ]; then
     TARGET_FILE=$HOME/${TARGET_FILE#\~/}
   fi
   while [ "$TARGET_FILE" != "" ]; do
@@ -13,9 +13,12 @@ __readlink_f (){
       FILENAME="$(basename "$TARGET_FILE")"
       TARGET_FILE="$(readlink "$FILENAME")"
   done
-  echo "$(pwd -P)/$FILENAME"
+  if [ "$FILENAME" = "." ]; then
+    echo "$(pwd -P)"
+  else
+    echo "$(pwd -P)/$FILENAME"
+  fi
 }
-
 
 readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
 
@@ -73,8 +76,21 @@ fi
 
 cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; exit 1)
 mkdir bin share
-
 export KIBRARY_HOME
+
+#catalog
+cd share
+piac_html="https://www.dropbox.com/s/l0w1abpfgn1ze38/piac.tar?dl=1"
+catalog_tar=$(mktemp)
+mv "$catalog_tar" "$catalog_tar".tar
+catalog_tar="$catalog_tar.tar"
+if [ $downloader = "curl" ]; then
+  curl -sL -o "$catalog_tar" "$piac_html"
+else
+  wget -q -O "$catalog_tar" "$piac_html"
+fi
+tar xf "$catalog_tar"
+cd ..
 
 #bin
 if [ $downloader = "curl" ]; then
@@ -125,7 +141,6 @@ if ! bin/javaCheck >/dev/null 2>&1; then
   export JAVA_HOME="${KIBRARY_HOME}/java/latest"
 fi
 
-
 #Build Kibrary
 echo "Kibrary is in $KIBRARY_HOME"
 if [ $downloader = "curl" ]; then
@@ -149,6 +164,8 @@ fi
 
 readonly KIBRARY=$(__readlink_f bin/kib*jar)
 
+exit 0
+###########ANCIENT
 #bash
 cat <<EOF >"$KIBRARY_HOME/bin/init_bash.sh"
 if [ -z "\$KIBRARY_HOME" ]; then
