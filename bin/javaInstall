@@ -11,7 +11,7 @@ usage_exit(){
   exit 1
 }
 
-jdk_version=12
+jdk_version=13
 
 while getopts d:fhv: OPT
 do
@@ -58,7 +58,6 @@ else
   printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
   exit 3
 fi
-exit
 
 if [ "$OS" = "Linux" ]; then
   tar -xf "$tmpfile"
