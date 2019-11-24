@@ -21,6 +21,8 @@ __readlink_f (){
 }
 
 readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
+readonly logfile=$(pwd)/kinst.log
+readonly errfile=$(pwd)/kinst.err
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
 read -r KIBRARY_HOME </dev/tty
@@ -29,68 +31,54 @@ if [ -z "$KIBRARY_HOME" ]; then
   KIBRARY_HOME="$DEFAULT_KIBRARY_HOME"
 fi
 
-if command -v curl >/dev/null 2>&1; then
+echo KIBRARY_HOME=$KIBRARY_HOME >>$logfile
+
+if command -v curl >>"$logfile" 2>>"$errfile"; then
   downloader=curl
-elif command -v wget >/dev/null 2>&1; then
+elif command -v wget >>"$logfile" 2>>"$errfile"; then
   downloader=wget
 else
-  printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually.\\n"
+  printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually. (3)\\n" | tee -a "$errfile"
   exit 3
 fi
 
+echo downloader="$downloader" >>"$logfile"
 KIBRARY_HOME="$(__readlink_f "$KIBRARY_HOME")"
 printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn </dev/tty
-case "$yn" in [yY]*)  ;; *) echo "Cancelled." ; exit ;; esac
-while getopts f OPT
-do
-  case $OPT in
-    "f" ) readonly FLG_F="TRUE" ;; 
-    *) printf "Invalid options detected.\n"
-      exit 250 ;;
-  esac
-done
-
-if [ -n "$FLG_F" ]; then
-  rm -rf "$KIBRARY_HOME"
-fi
+case "$yn" in [yY]*)  ;; *) echo "Installation cancelled."; exit ;; esac
 
 githubio='https://kensuke1984.github.io'
 gitbin="$githubio/bin"
 if [ ! -e "$KIBRARY_HOME" ]; then
-  if ! mkdir -p "$KIBRARY_HOME" >/dev/null 2>&1; then
-    echo "Could not create $KIBRARY_HOME"
-    return 2>/dev/null
+  if ! mkdir -p "$KIBRARY_HOME" >>"$logfile" 2>>"$errfile"; then
+    echo "Could not create $KIBRARY_HOME. (1)" | tee -a "$errfile"
     exit 1 
   fi
 else
-  printf "%s already exists. If you want to do a clean install, please add an option \\e[4;31m-f\\e[m as below:\\n" "$KIBRARY_HOME" 
-  if [ "$downloader" = "curl" ]; then
-    echo "curl -s $githubio/bin/install.sh | /bin/sh -s -- -f"
-  else
-    echo "wget -q -O - $githubio/bin/install.sh | /bin/sh -s -- -f"
-  fi
-  return 2>/dev/null
-  exit 2
+  printf "%s exists. Do you want to \\e[4;31mremove\\e[m it and continue? (y/N)\\n" "$KIBRARY_HOME"
+  read -r yn </dev/tty
+  case "$yn" in [yY]*)  ;; *) echo "Installation cancelled." ; exit 2;; esac
+  rm -rf "$KIBRARY_HOME"
+  mkdir "$KIBRARY_HOME"
 fi
 
-cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure."; exit 1)
+cd "$KIBRARY_HOME" || (echo "Could not cd to $KIBRARY_HOME. Install failure. (1)" | tee -a "$errfile"; exit 1)
 mkdir bin share
 export KIBRARY_HOME
 
 #catalog
-cd share
-piac_html="https://www.dropbox.com/s/l0w1abpfgn1ze38/piac.tar?dl=1"
-catalog_tar=$(mktemp)
-mv "$catalog_tar" "$catalog_tar".tar
-catalog_tar="$catalog_tar.tar"
+#piac_html="https://www.dropbox.com/s/l0w1abpfgn1ze38/piac.tar?dl=1"
+piac_html="https://www.dropbox.com/s/dadsqhe47wnfe2k/piac.zip?dl=1"
+catalog_zip=$(mktemp)
+mv "$catalog_zip" "$catalog_zip".zip
+catalog_zip="$catalog_zip.zip"
 if [ $downloader = "curl" ]; then
-  curl -sL -o "$catalog_tar" "$piac_html"
+  curl -sL -o "$catalog_zip" "$piac_html"
 else
-  wget -q -O "$catalog_tar" "$piac_html"
+  wget -q -O "$catalog_zip" "$piac_html"
 fi
-tar xf "$catalog_tar"
-cd ..
+(cd share; unzip -q "$catalog_zip")
 
 #bin
 if [ $downloader = "curl" ]; then
@@ -121,48 +109,50 @@ chmod +x "bin/kibrary_property"
 chmod +x "bin/kibrary_operation"
 chmod +x "bin/oracle_javase_url"
 
-if ! bin/javaCheck -r >/dev/null 2>&1; then
-  if ! "bin/javaInstall" -f >/dev/null 2>&1; then
-    echo "Java is not found and cannot be installed. ANISOtime installation cancelled."
-    exit 1
+if ! bin/javaCheck -r >>"$logfile" 2>>"$errfile"; then
+  if ! "bin/javaInstall" -f >>"$logfile" 2>>"$errfile"; then
+    echo "Java is not found and cannot be installed. ANISOtime installation cancelled. (71)" | tee -a "$errfile"
+    exit 71
   fi
 fi
 
-if ! bin/javaCheck >/dev/null 2>&1; then
-  if ! "bin/javaInstall" -f >/dev/null 2>&1; then
-    echo "Due to a failure of building Kibrary, downloading the latest binary release.";
+if ! bin/javaCheck >>"$logfile" 2>>"$errfile"; then
+  if ! "bin/javaInstall" -f >>"$logfile" 2>>"$errfile"; then
+    echo "Due to a failure of building Kibrary, downloading the latest binary release. (81)" | tee -a "$errfile"
     if [ $downloader = "curl" ]; then
       curl -s -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar
     else
       wget -q -P bin "$gitbin"/kibrary-latest.jar
     fi
-    exit 1
+    exit 81
   fi
   export JAVA_HOME="${KIBRARY_HOME}/java/latest"
 fi
 
 #Build Kibrary
-echo "Kibrary is in $KIBRARY_HOME"
+echo "Kibrary is in $KIBRARY_HOME" | tee -a "$logfile"
 if [ $downloader = "curl" ]; then
   curl -s -o gradlew.tar "$githubio"/gradlew.tar
 else
   wget -q "$githubio"/gradlew.tar
 fi
 tar xf gradlew.tar
-./gradlew --no-daemon -q >/dev/null
+./gradlew -q --no-daemon >/dev/null 2>&1
 
-if ./gradlew --no-daemon -q build 2>/dev/null; then
+if ./gradlew -q --no-daemon build >/dev/null 2>&1; then
   mv build/libs/kibrary*jar bin 
 else
-  echo "Due to a failure of building Kibrary, downloading the latest binary release.";
+  echo "Due to a failure of building Kibrary, downloading the latest binary release." | tee -a "$errfile"
   if [ $downloader = "curl" ]; then
-    curl -s -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar
+    curl -# -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar 2>>"$errfile"
   else
-    wget -q -P bin "$gitbin"/kibrary-latest.jar
+    wget -P bin "$gitbin"/kibrary-latest.jar 2>>"$errfile"
   fi
 fi 
 
 readonly KIBRARY=$(__readlink_f bin/kib*jar)
+
+mv "$logfile" "$errfile" "$KIBRARY_HOME"
 
 exit 0
 ###########ANCIENT
@@ -172,8 +162,8 @@ if [ -z "\$KIBRARY_HOME" ]; then
   echo "KIBRARY_HOME is not set."
   export KIBRARY_HOME=\$(dirname \$(__readlink_f "\$(dirname \$0)"))
   printf "KIBRARY_HOME is now %s\n" "\$KIBRARY_HOME"
-#  return 71
 fi
+
 ##classpath
 #export CLASSPATH=\$CLASSPATH:$KIBRARY
 export PATH=\$PATH:\${KIBRARY_HOME}/bin
