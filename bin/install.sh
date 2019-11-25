@@ -26,6 +26,7 @@ readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
 readonly logfile=$(pwd)/kinst.log
 readonly errfile=$(pwd)/kinst.err
 
+touch $logfile $errfile
 echo "###install.sh $install_version" >>$logfile
 echo "###install.sh $install_version" >>$errfile
 
