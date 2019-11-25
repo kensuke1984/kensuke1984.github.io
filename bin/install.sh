@@ -68,8 +68,7 @@ mkdir bin share
 export KIBRARY_HOME
 
 #catalog
-#piac_html="https://www.dropbox.com/s/l0w1abpfgn1ze38/piac.tar?dl=1"
-piac_html="https://www.dropbox.com/s/dadsqhe47wnfe2k/piac.zip?dl=1"
+piac_html="http://bit.ly/2rnhOMS"
 catalog_zip=$(mktemp)
 mv "$catalog_zip" "$catalog_zip".zip
 catalog_zip="$catalog_zip.zip"
@@ -110,6 +109,7 @@ chmod +x "bin/kibrary_property"
 chmod +x "bin/kibrary_operation"
 chmod +x "bin/oracle_javase_url"
 
+bin/javaCheck -v >>"$logfile" 2>>"$errfile"
 bin/javaCheck -r >>"$logfile" 2>>"$errfile"
 if [ $? -ge 20 ] ; then
   echo "Java is not found. ANISOtime installation cancelled. (71)" | tee -a "$errfile"
@@ -119,7 +119,7 @@ fi
 bin/javaCheck >>"$logfile" 2>>"$errfile"
 if [ $? -ge 20 ] ; then
   echo "Because you do not have a Java compiler installed, downloading the latest binary release. (81)" | tee -a "$errfile"
-  kibin='https://www.dropbox.com/s/utep6ep1l1bxe3d/kibrary-0.4.5.jar?dl=1'
+  kibin='https:bit.ly/37wxazr'
   kibpath='bin/kibrary-0.4.5.jar'
   if [ $downloader = "curl" ]; then
     curl -sL -o "$kibpath" "$kibin"

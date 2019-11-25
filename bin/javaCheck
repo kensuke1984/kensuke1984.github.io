@@ -1,11 +1,15 @@
 #!/bin/sh
 set -o posix
 
+check_version='0.0.1'
+
+
 usage_exit() {
   echo "Usage: $0 [-i] [-r] [-p] [-l] [-k]" 1>&2
   echo "Check the versions of Java in Kibrary if exists, otherwise in PATH"
   echo "  -r $0 checks if the installed Java can run Kibrary and does not care about the Java compiler. If this option is not specified, $0 also checks if the installed Java compiler can compile Kibrary."
   echo "  -i prints java and javac versions in PATH."
+  echo "  -v prints the version."
 #  echo "  -p prints or checks java and javac version in PATH even Kibrary has ones."
 #  echo "  -k prints or checks java and javac version in Kibrary, if there are none in Kibrary, always error exits."
 #  echo "  -l checks both java and javac not only can run Kibrary but are the latest. If -r option is specified, the version of javac is not checked."
@@ -22,7 +26,7 @@ if [ -z "$KIBRARY_HOME" ]; then
   printf "It is assumed to be %s.\n" "$KIBRARY_HOME" 1>&2
 fi
 
-while getopts ilrkp OPT
+while getopts ilrkpv OPT
 do
   case $OPT in
     "i" ) readonly FLG_I="TRUE" ;;
@@ -30,9 +34,15 @@ do
     "r" ) readonly FLG_R="TRUE" ;;
     "p" ) readonly FLG_P="TRUE" ;;
     "l" ) readonly FLG_L="TRUE" ;;
+    "v" ) readonly FLG_V="TRUE" ;;
     "?" ) usage_exit;;
   esac
 done
+
+if [ -n "$FLG_V" ]; then
+  echo "javaCheck $check_version"
+  exit 0
+fi
 
 if [ -n "$FLG_K" ] && [ -n "$FLG_P" ]; then
   echo " -k and -p can not be used simultaneously. (99)" 1>&2
