@@ -20,15 +20,15 @@ __readlink_f (){
   fi
 }
 
-install_version='0.0.1'
+install_version='0.0.1.1'
 
 readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
 readonly logfile=$(pwd)/kinst.log
 readonly errfile=$(pwd)/kinst.err
 
 touch $logfile $errfile
-echo "###install.sh $install_version" >>$logfile
-echo "###install.sh $install_version" >>$errfile
+echo "###install.sh stdout $install_version" >>$logfile
+echo "###install.sh stderr $install_version" >>$errfile
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
 read -r KIBRARY_HOME </dev/tty
@@ -39,16 +39,16 @@ fi
 
 echo KIBRARY_HOME=$KIBRARY_HOME >>$logfile
 
-if command -v curl >>"$logfile" 2>>"$errfile"; then
+if command -v curl >/dev/null 2>>"$errfile"; then
   downloader=curl
-elif command -v wget >>"$logfile" 2>>"$errfile"; then
+elif command -v wget >/dev/null 2>>"$errfile"; then
   downloader=wget
 else
   printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually. (3)\\n" | tee -a "$errfile"
   exit 3
 fi
-
 echo downloader="$downloader" >>"$logfile"
+
 KIBRARY_HOME="$(__readlink_f "$KIBRARY_HOME")"
 printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn </dev/tty
