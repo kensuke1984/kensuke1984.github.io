@@ -79,6 +79,7 @@ else
   wget -q -O "$catalog_zip" "$piac_html"
 fi
 (cd share; unzip -q "$catalog_zip")
+rm "$catalog_zip"
 
 #bin
 if [ $downloader = "curl" ]; then

@@ -67,7 +67,7 @@ print_set_java8(){
 if command -v "$JAVA" 1>/dev/null 2>&1; then
   java_version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
 else
-  printf "Java Runtime Environment is not found.\\n"
+  printf "Java Runtime Environment is not found. (250)\\n"
   exit 250
 fi
 
@@ -75,7 +75,7 @@ if command -v "$JAVAC" 1>/dev/null 2>&1; then
   javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
 #  javac_version_final_number=${javac_version#1.8.0_}
 elif [ -z "$FLG_R" ]; then
-  printf "Java compiler is not found.\\n"
+  printf "Java compiler is not found. (255)\\n"
   exit 255
 fi
 #echo "$javac_version"
@@ -113,7 +113,7 @@ case "$java_version" in
     if [ "$latest_java8_version" = "$java_version" ] || [ "$latest_java8_version" \< "$java_version" ]; then
       exit 0
     else
-      printf "It's not latest. Please set \$JAVA \\033[1;31m%s\\033[m.\\n" "$latest_java8_version"
+      printf "It's not latest. Please set \$JAVA \\033[1;31m%s\\033[m. (8)\\n" "$latest_java8_version"
       exit 8
     fi
      ;;
@@ -127,7 +127,7 @@ case "$java_version" in
       print_set_java8
       exit 0
     else
-      printf "It's not latest. Please set \$JAVA the latest Java 9.\\n"
+      printf "It's not latest. Please set \$JAVA the latest Java 9. (9)\\n"
       exit 9
     fi
      ;;
@@ -141,7 +141,7 @@ case "$java_version" in
       print_set_java8
       exit 0
     else
-      printf "It's not latest. Please set \$JAVA the latest Java 10.\\n"
+      printf "It's not latest. Please set \$JAVA the latest Java 10. (10)\\n"
       exit 10
     fi
     ;; 
@@ -151,11 +151,11 @@ case "$java_version" in
     printf "I am sorry, however, a bit afraid of the compatibility.\\n"
     if [ "$latest_java11_version" = "$java_version" ] || [ "$latest_java11_version" \< "$java_version" ]; then
       printf "But.. anyway it's the latest Java 11.\\n"
-      printf "Please set \$JAVA the latest Java 8, if there's anything wrong. I will catch up soon.\\n"
+      print_set_java8
       exit 0
     else
       printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java11_version"
-      printf "It's not latest. Please set \$JAVA the latest Java 11.\\n"
+      printf "It's not latest. Please set \$JAVA the latest Java 11. (11)\\n"
       exit 11
     fi      
     ;;
@@ -169,8 +169,8 @@ case "$java_version" in
       exit 0
     else
       printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java12_version"
-      printf "It's not latest. Please set \$JAVA the latest Java 11.\\n"
-      exit 11
+      printf "It's not latest. Please set \$JAVA the latest Java 12. (12)\\n"
+      exit 12
     fi      
     ;;
 #Java 13
@@ -183,8 +183,8 @@ case "$java_version" in
       exit 0
     else
       printf "\\033[4mIn addtion\\e[m, its version \\033[1;31m%s\\033[m may not be the latest \\033[1;31m%s\\033[m.\\n" "$java_version" "$latest_java13_version"
-      printf "It's not latest. Please set \$JAVA the latest Java 13.\\n"
-      exit 11
+      printf "It's not latest. Please set \$JAVA the latest Java 13. (13)\\n"
+      exit 13
     fi      
     ;;
   * )
