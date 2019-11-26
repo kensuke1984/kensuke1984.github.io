@@ -2,7 +2,7 @@
 #set -e
 set -o posix
 
-install_version='0.1.1'
+install_version='0.1.2'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -93,6 +93,7 @@ if [ $downloader = "curl" ]; then
   curl -s -o bin/javaInstall "$gitbin"/javaInstall
   curl -s -o bin/anisotime "$gitbin"/anisotime
   curl -s -o bin/javaCheck.jar "$gitbin"/javaCheck.jar
+  curl -s -o bin/javaCheck.jar "$gitbin"/readlink_f.sh
 #  curl -s -o bin/.kibraryrc "$gitbin"/kibraryrc
   curl -s -o bin/kibrary_property "$gitbin"/kibrary_property
   curl -s -o bin/kibrary_operation "$gitbin"/kibrary_operation
@@ -101,6 +102,7 @@ else
   wget -q -P bin "$gitbin"/javaCheck
   wget -q -P bin "$gitbin"/javaInstall
   wget -q -P bin "$gitbin"/anisotime
+  wget -q -P bin "$gitbin"/readlink_f.sh
   wget -q -P bin "$gitbin"/javaCheck.jar
   wget -q -P bin "$gitbin"/kibrary_property
   wget -q -P bin "$gitbin"/kibrary_operation
@@ -111,6 +113,7 @@ fi
 chmod +x "bin/javaCheck"
 chmod +x "bin/javaInstall"
 chmod +x "bin/anisotime"
+chmod +x "bin/readlink_f.sh"
 chmod +x "bin/javaCheck.jar"
 chmod +x "bin/kibrary_property"
 chmod +x "bin/kibrary_operation"
