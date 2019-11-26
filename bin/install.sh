@@ -2,6 +2,8 @@
 #set -e
 set -o posix
 
+install_version='0.1.0'
+
 #Emulates readlink -f hoge
 __readlink_f (){
   TARGET_FILE=$1
@@ -20,8 +22,6 @@ __readlink_f (){
   fi
 }
 
-install_version='0.0.1.1'
-
 readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
 readonly logfile=$(pwd)/kinst.log
 readonly errfile=$(pwd)/kinst.err
@@ -29,6 +29,7 @@ readonly errfile=$(pwd)/kinst.err
 touch $logfile $errfile
 echo "###install.sh stdout $install_version" >>$logfile
 echo "###install.sh stderr $install_version" >>$errfile
+echo "PATH=$PATH" >>$logfile
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
 read -r KIBRARY_HOME </dev/tty
@@ -37,7 +38,7 @@ if [ -z "$KIBRARY_HOME" ]; then
   KIBRARY_HOME="$DEFAULT_KIBRARY_HOME"
 fi
 
-echo KIBRARY_HOME=$KIBRARY_HOME >>$logfile
+echo "KIBRARY_HOME=$KIBRARY_HOME" >>$logfile
 
 if command -v curl >/dev/null 2>>"$errfile"; then
   downloader=curl
@@ -47,7 +48,7 @@ else
   printf "No downloader is found. Install \\e[31mGNU Wget\\e[m (\\e[4mhttps://www.gnu.org/software/wget/\\e[m) or \\e[31mcurl\\e[m (\\e[4mhttps://curl.haxx.se/\\e[m), otherwise please download the latest Kibrary manually. (3)\\n" | tee -a "$errfile"
   exit 3
 fi
-echo downloader="$downloader" >>"$logfile"
+echo "downloader=$downloader" >>"$logfile"
 
 KIBRARY_HOME="$(__readlink_f "$KIBRARY_HOME")"
 printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
@@ -74,8 +75,7 @@ mkdir bin share
 export KIBRARY_HOME
 
 #catalog
-#piac_html="https://www.dropbox.com/s/l0w1abpfgn1ze38/piac.tar?dl=1"
-piac_html="https://www.dropbox.com/s/dadsqhe47wnfe2k/piac.zip?dl=1"
+piac_html="https://bit.ly/2rnhOMS"
 catalog_zip=$(mktemp)
 mv "$catalog_zip" "$catalog_zip".zip
 catalog_zip="$catalog_zip.zip"
@@ -93,7 +93,7 @@ if [ $downloader = "curl" ]; then
   curl -s -o bin/javaInstall "$gitbin"/javaInstall
   curl -s -o bin/anisotime "$gitbin"/anisotime
   curl -s -o bin/javaCheck.jar "$gitbin"/javaCheck.jar
-  curl -s -o bin/.kibraryrc "$gitbin"/kibraryrc
+#  curl -s -o bin/.kibraryrc "$gitbin"/kibraryrc
   curl -s -o bin/kibrary_property "$gitbin"/kibrary_property
   curl -s -o bin/kibrary_operation "$gitbin"/kibrary_operation
   curl -s -o bin/oracle_javase_url "$gitbin"/oracle_javase_url
@@ -105,7 +105,7 @@ else
   wget -q -P bin "$gitbin"/kibrary_property
   wget -q -P bin "$gitbin"/kibrary_operation
   wget -q -P bin "$gitbin"/oracle_javase_url
-  wget -q -O bin/.kibraryrc "$gitbin"/kibraryrc
+#  wget -q -O bin/.kibraryrc "$gitbin"/kibraryrc
 fi
 
 chmod +x "bin/javaCheck"
@@ -115,6 +115,21 @@ chmod +x "bin/javaCheck.jar"
 chmod +x "bin/kibrary_property"
 chmod +x "bin/kibrary_operation"
 chmod +x "bin/oracle_javase_url"
+
+if [ -Z "$JAVA" ];then
+  JAVA='java'
+  echo "JAVA is set to be java" >>$logfile
+else
+  echo "JAVA=$JAVA" >>$logfile
+fi
+
+if [ -Z "$JAVAC" ];then
+  JAVAC='javac'
+  echo "JAVAC is set to be javac" >>$logfile
+else
+  echo "JAVAC=$JAVAC" >>$logfile
+fi
+export JAVA JAVAC
 
 ./bin/javaCheck -v >>"$logfile" 2>>"$errfile"
 
@@ -127,7 +142,7 @@ fi
 bin/javaCheck >>"$logfile" 2>>"$errfile"
 if [ $? -ge 20 ] ; then
   echo "Because you do not have a Java compiler installed, downloading the latest binary release. (81)" | tee -a "$errfile"
-  kibin='https://www.dropbox.com/s/utep6ep1l1bxe3d/kibrary-0.4.5.jar?dl=1'
+  kibin='http://bit.ly/37wxazr'
   kibpath='bin/kibrary-0.4.5.jar'
   if [ $downloader = "curl" ]; then
     curl -sL -o "$kibpath" "$kibin"
@@ -162,52 +177,6 @@ readonly KIBRARY=$(__readlink_f bin/kib*jar)
 
 mv "$logfile" "$errfile" "$KIBRARY_HOME"
 
-exit 0
-###########ANCIENT
-#bash
-cat <<EOF >"$KIBRARY_HOME/bin/init_bash.sh"
-if [ -z "\$KIBRARY_HOME" ]; then
-  echo "KIBRARY_HOME is not set."
-  export KIBRARY_HOME=\$(dirname \$(__readlink_f "\$(dirname \$0)"))
-  printf "KIBRARY_HOME is now %s\n" "\$KIBRARY_HOME"
-fi
-
-##classpath
-#export CLASSPATH=\$CLASSPATH:$KIBRARY
-export PATH=\$PATH:\${KIBRARY_HOME}/bin
-if [ -e \${KIBRARY_HOME}/java/latest/bin ];then
-  export PATH=\${KIBRARY_HOME}/java/latest/bin:\$PATH
-  export JAVA_HOME=\${KIBRARY_HOME}/java/latest
-fi
-EOF
-
-#tcsh
-cat <<EOF >"$KIBRARY_HOME/bin/init_tcsh.sh"
-##classpath
-set opt_set = \$?nonomatch
-set nonomatch
-#if ! \$?CLASSPATH then
-#  setenv CLASSPATH $KIBRARY
-#else
-#  setenv CLASSPATH \${CLASSPATH}:$KIBRARY
-#endif
-setenv PATH \${PATH}:$KIBRARY_HOME/bin
-if (\$opt_set == 0) then
-  unset nonomatch
-endif
-EOF
-
-echo Copy and paste the below line to setup PATH and CLASSPATH.
-
-if echo "$SHELL" | grep -qE 'bash|zsh'; then
-  echo "source $KIBRARY_HOME/bin/init_bash.sh"
-elif echo "$SHELL" | grep -qE 'tcsh'; then
-  echo "source $KIBRARY_HOME/bin/init_tcsh.sh" 
-else
-  echo "Please add $KIBRARY_HOME/bin in PATH."
-fi
-#source $KIBRARY_BIN/init_bash.sh 2>/dev/null || source $KIBRARY_BIN/init_tcsh.sh 2>/dev/null
-#return 2> /dev/null
 exit 0
 
 

@@ -1,8 +1,7 @@
 #!/bin/sh
 set -o posix
 
-check_version='0.0.1'
-
+check_version='0.1.0'
 
 usage_exit() {
   echo "Usage: $0 [-i] [-r] [-p] [-l] [-k]" 1>&2
@@ -16,15 +15,15 @@ usage_exit() {
   exit 1
 }
 
-if [ -z "$KIBRARY_HOME" ]; then
-  printf "KIBRARY_HOME is not set.\n" 1>&2
-  KIBRARY_HOME="$HOME/Kibrary"
-  if [ ! -e "$KIBRARY_HOME" ]; then
-    printf "Assumed KIBRARY_HOME(%s) does not exist. (71)\n" "$KIBRARY_HOME" 
-    exit 71
-  fi
-  printf "It is assumed to be %s.\n" "$KIBRARY_HOME" 1>&2
-fi
+#if [ -z "$KIBRARY_HOME" ]; then
+#  printf "KIBRARY_HOME is not set.\n" 1>&2
+#  KIBRARY_HOME="$HOME/Kibrary"
+#  if [ ! -e "$KIBRARY_HOME" ]; then
+#    printf "Assumed KIBRARY_HOME(%s) does not exist. (71)\n" "$KIBRARY_HOME" 
+#    exit 71
+#  fi
+#  printf "It is assumed to be %s.\n" "$KIBRARY_HOME" 1>&2
+#fi
 
 while getopts ilrkpv OPT
 do
@@ -49,18 +48,18 @@ if [ -n "$FLG_K" ] && [ -n "$FLG_P" ]; then
   exit 99
 fi
 
-if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
-  if [ -n "$FLG_K" ]; then
-    . "$KIBRARY_HOME"/bin/.kibraryrc -k || return 1
-  elif [ -n "$FLG_P" ]; then
-    . "$KIBRARY_HOME"/bin/.kibraryrc -p || return 1
-  else
-    . "$KIBRARY_HOME"/bin/.kibraryrc -- || return 1
-  fi
-else
-  printf "No file for variables. Please reinstall Kibrary. (71)\n" 1>&2
-  exit 71
-fi
+#if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
+#  if [ -n "$FLG_K" ]; then
+#    . "$KIBRARY_HOME"/bin/.kibraryrc -k || return 1
+#  elif [ -n "$FLG_P" ]; then
+#    . "$KIBRARY_HOME"/bin/.kibraryrc -p || return 1
+#  else
+#    . "$KIBRARY_HOME"/bin/.kibraryrc -- || return 1
+#  fi
+#else
+#  printf "No file for variables. Please reinstall Kibrary. (71)\n" 1>&2
+#  exit 71
+#fi
 
 print_get_java(){
   printf "Get the latest Java \\033[1;31m%s\\033[m from Oracle (https://www.oracle.com/technetwork/java/javase/downloads/index.html).\n" "$latest_java8_version" 1>&2
@@ -74,6 +73,10 @@ print_set_java8(){
   return
 }
 
+if [ -z "$JAVA" ]; then
+  JAVA=java
+  echo "JAVA is set to be $JAVA" 1>&2
+fi
 
 if command -v "$JAVA" 1>/dev/null 2>&1; then
   java_version=$($JAVA -version 2>&1 | awk '/version/{gsub(/\x22/,"",$3);print $3}')
@@ -82,14 +85,18 @@ else
   exit 250
 fi
 
+if [ -z "$JAVAC" ]; then
+  JAVAC=javac
+  echo "JAVAC is set to be $JAVA" 1>&2
+fi
+
 if command -v "$JAVAC" 1>/dev/null 2>&1; then
   javac_version=$($JAVAC -version 2>&1 | awk '{print $2}')
 #  javac_version_final_number=${javac_version#1.8.0_}
 elif [ -z "$FLG_R" ]; then
-  printf "Java compiler is not found. (255)\n"
+  printf "Java compiler is not found. (255)\n" 1>&2
   exit 255
 fi
-#echo "$javac_version"
 
 if [ -n "$FLG_I" ]; then
   printf "java %s\n" "$java_version"
