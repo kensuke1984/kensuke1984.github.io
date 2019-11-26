@@ -2,7 +2,7 @@
 #set -e
 set -o posix
 
-install_version='0.1.0'
+install_version='0.1.1'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -38,8 +38,6 @@ if [ -z "$KIBRARY_HOME" ]; then
   KIBRARY_HOME="$DEFAULT_KIBRARY_HOME"
 fi
 
-echo "KIBRARY_HOME=$KIBRARY_HOME" >>$logfile
-
 if command -v curl >/dev/null 2>>"$errfile"; then
   downloader=curl
 elif command -v wget >/dev/null 2>>"$errfile"; then
@@ -54,6 +52,8 @@ KIBRARY_HOME="$(__readlink_f "$KIBRARY_HOME")"
 printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn </dev/tty
 case "$yn" in [yY]*)  ;; *) echo "Installation cancelled."; exit ;; esac
+
+echo "KIBRARY_HOME=$KIBRARY_HOME" >>$logfile
 
 githubio='https://kensuke1984.github.io'
 gitbin="$githubio/bin"
@@ -116,18 +116,18 @@ chmod +x "bin/kibrary_property"
 chmod +x "bin/kibrary_operation"
 chmod +x "bin/oracle_javase_url"
 
-if [ -Z "$JAVA" ];then
+if [ -z "$JAVA" ];then
   JAVA='java'
-  echo "JAVA is set to be java" >>$logfile
+  echo "JAVA is set to be 'java'. ($(command -v java))" >>$logfile
 else
-  echo "JAVA=$JAVA" >>$logfile
+  echo "JAVA=$JAVA ($(command -v $JAVA)) " >>$logfile
 fi
 
-if [ -Z "$JAVAC" ];then
+if [ -z "$JAVAC" ];then
   JAVAC='javac'
-  echo "JAVAC is set to be javac" >>$logfile
+  echo "JAVAC is set to be 'javac' ($(command -v javac))" >>$logfile
 else
-  echo "JAVAC=$JAVAC" >>$logfile
+  echo "JAVAC=$JAVAC ($(command -v $JAVAC))" >>$logfile
 fi
 export JAVA JAVAC
 
@@ -167,9 +167,9 @@ if ./gradlew -q --no-daemon build >/dev/null 2>&1; then
 else
   echo "Due to a failure of building Kibrary, downloading the latest binary release." | tee -a "$errfile"
   if [ $downloader = "curl" ]; then
-    curl -# -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar 2>>"$errfile"
+    curl -sL -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar 2>>"$errfile"
   else
-    wget -P bin "$gitbin"/kibrary-latest.jar 2>>"$errfile"
+    wget -q -P bin "$gitbin"/kibrary-latest.jar 2>>"$errfile"
   fi
 fi 
 
