@@ -116,6 +116,8 @@ chmod +x "bin/kibrary_property"
 chmod +x "bin/kibrary_operation"
 chmod +x "bin/oracle_javase_url"
 
+./bin/javaCheck -v >>"$logfile" 2>>"$errfile"
+
 bin/javaCheck -r >>"$logfile" 2>>"$errfile"
 if [ $? -ge 20 ] ; then
   echo "Java is not found. ANISOtime installation cancelled. (71)" | tee -a "$errfile"
