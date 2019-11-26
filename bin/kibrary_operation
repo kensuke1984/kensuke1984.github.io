@@ -1,22 +1,26 @@
 #!/bin/sh
 set -o posix
 
+kibration_version='0.0.1'
+
 if [ -z "$KIBRARY_HOME" ]; then
-  export KIBRARY_HOME=$(dirname "$(readlink -f "$(dirname $0)")")
+  export KIBRARY_HOME=$(dirname "$(./readlink_f.sh "$(dirname $0)")")
   printf "KIBRARY_HOME is %s.\n" "$KIBRARY_HOME." 1>&2
 fi
 
-if [ -e "$KIBRARY_HOME"/bin/.kibraryrc ]; then
-  . "$KIBRARY_HOME"/bin/.kibraryrc -- || return 1
-else
-  printf "No file for variables. Please reinstall Kibrary.\\n"
-  exit 71
-fi
+KIBRARY_BIN="$KIBRARY_HOME/bin"
+KIBRARY=$(find "$KIBRARY_BIN" -type f -name 'kib*jar' | tail -n1)
 
-if ! javaCheck -r >/dev/null; then
-  javaCheck 
+if [ -z "$JAVA" ]; then
+  JAVA='java'
+  echo "JAVA is set to be 'java'. ($(command -v java))" 1>&2
+fi
+export JAVA
+
+if ! "$KIBRARY_BIN/javaCheck" -r >/dev/null 2>&1; then
+  "$KIBRARY_BIN/javaCheck"
   exit 1
 fi
 
-"$JAVA" io.github.kensuke1984.kibrary.Operation "$@"
+"$JAVA" -cp "$KIBRARY" io.github.kensuke1984.kibrary.Operation "$@"
 exit $?
