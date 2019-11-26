@@ -2,7 +2,11 @@
 #set -e
 set -o posix
 
-install_version='0.1.2.1'
+readonly KIBIN_URL='http://bit.ly/37wxazr'
+readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
+readonly logfile="$(pwd)/kinst.log"
+readonly errfile="$(pwd)/kinst.err"
+readonly install_version='0.1.3'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -10,10 +14,11 @@ __readlink_f (){
   if [ "$(echo "$TARGET_FILE" | cut -c 1-2)" = "~/" ]; then
     TARGET_FILE=$HOME/${TARGET_FILE#\~/}
   fi
-  while [ "$TARGET_FILE" != "" ]; do
-      cd "$(dirname "$TARGET_FILE")" || exit 60
-      FILENAME="$(basename "$TARGET_FILE")"
-      TARGET_FILE="$(readlink "$FILENAME")"
+  while [ "$TARGET_FILE" != "" ];
+  do
+    cd "$(dirname "$TARGET_FILE")" || exit 60
+    FILENAME="$(basename "$TARGET_FILE")"
+    TARGET_FILE="$(readlink "$FILENAME")"
   done
   if [ "$FILENAME" = "." ]; then
     echo "$(pwd -P)"
@@ -22,9 +27,14 @@ __readlink_f (){
   fi
 }
 
-readonly DEFAULT_KIBRARY_HOME="$HOME"/Kibrary
-readonly logfile=$(pwd)/kinst.log
-readonly errfile=$(pwd)/kinst.err
+__md5 (){
+  if command -v md5sum >/dev/null 2>&1; then
+    md5sum "$1" >>"$logfile"
+  elif command -v md5 >/dev/null 2>&1; then
+    md5 "$1" >>"$logfile"
+  fi
+}
+
 
 touch $logfile $errfile
 echo "###install.sh stdout $install_version" >>$logfile
@@ -86,6 +96,7 @@ else
 fi
 (cd share; unzip -q "$catalog_zip")
 rm "$catalog_zip"
+__md5 share/*.cat
 
 #bin
 if [ $downloader = "curl" ]; then
@@ -94,10 +105,10 @@ if [ $downloader = "curl" ]; then
   curl -s -o bin/anisotime "$gitbin"/anisotime
   curl -s -o bin/javaCheck.jar "$gitbin"/javaCheck.jar
   curl -s -o bin/readlink_f.sh "$gitbin"/readlink_f.sh
-#  curl -s -o bin/.kibraryrc "$gitbin"/kibraryrc
   curl -s -o bin/kibrary_property "$gitbin"/kibrary_property
   curl -s -o bin/kibrary_operation "$gitbin"/kibrary_operation
   curl -s -o bin/oracle_javase_url "$gitbin"/oracle_javase_url
+#  curl -s -o bin/.kibraryrc "$gitbin"/kibraryrc
 else
   wget -q -P bin "$gitbin"/javaCheck
   wget -q -P bin "$gitbin"/javaInstall
@@ -110,20 +121,29 @@ else
 #  wget -q -O bin/.kibraryrc "$gitbin"/kibraryrc
 fi
 
-chmod +x "bin/javaCheck"
-chmod +x "bin/javaInstall"
-chmod +x "bin/anisotime"
-chmod +x "bin/readlink_f.sh"
-chmod +x "bin/javaCheck.jar"
-chmod +x "bin/kibrary_property"
-chmod +x "bin/kibrary_operation"
-chmod +x "bin/oracle_javase_url"
+__md5 bin/javaCheck
+__md5 bin/javaInstall
+__md5 bin/anisotime
+__md5 bin/readlink_f.sh
+__md5 bin/javaCheck.jar
+__md5 bin/kibrary_property
+__md5 bin/kibrary_operation
+__md5 bin/oracle_javase_url
+
+chmod +x bin/javaCheck
+chmod +x bin/javaInstall
+chmod +x bin/anisotime
+chmod +x bin/readlink_f.sh
+chmod +x bin/javaCheck.jar
+chmod +x bin/kibrary_property
+chmod +x bin/kibrary_operation
+chmod +x bin/oracle_javase_url
 
 if [ -z "$JAVA" ];then
   JAVA='java'
   echo "JAVA is set to be 'java'. ($(command -v java))" >>$logfile
 else
-  echo "JAVA=$JAVA ($(command -v $JAVA)) " >>$logfile
+  echo "JAVA=$JAVA ($(command -v $JAVA))" >>$logfile
 fi
 
 if [ -z "$JAVAC" ];then
@@ -145,13 +165,13 @@ fi
 bin/javaCheck >>"$logfile" 2>>"$errfile"
 if [ $? -ge 20 ] ; then
   echo "Because you do not have a Java compiler installed, downloading the latest binary release. (81)" | tee -a "$errfile"
-  kibin='http://bit.ly/37wxazr'
   kibpath='bin/kibrary-0.4.5.jar'
   if [ $downloader = "curl" ]; then
-    curl -sL -o "$kibpath" "$kibin"
+    curl -sL -o "$kibpath" "$KIBIN_URL"
   else
-    wget -q -O "$kibpath" "$gitbin"/kibrary-latest.jar
+    wget -q -O "$kibpath" "$KIBIN_URL"
   fi
+  __md5 "$kibpath"
   exit 81
 fi
 
@@ -162,21 +182,25 @@ if [ $downloader = "curl" ]; then
 else
   wget -q "$githubio"/gradlew.tar
 fi
+__md5 gradlew.tar
 tar xf gradlew.tar
 ./gradlew -q --no-daemon >/dev/null 2>&1
 
 if ./gradlew -q --no-daemon build >/dev/null 2>&1; then
   mv build/libs/kibrary*jar bin 
 else
-  echo "Due to a failure of building Kibrary, downloading the latest binary release." | tee -a "$errfile"
+  echo "Due to a failure of building Kibrary, downloading the latest binary release. (82)" | tee -a "$errfile"
+  kibpath='bin/kibrary-0.4.5.jar'
   if [ $downloader = "curl" ]; then
-    curl -sL -o "bin/kibrary-latest.jar" "$gitbin"/kibrary-latest.jar 2>>"$errfile"
+    curl -sL -o "$kibpath" "$KIBIN_URL" 2>>"$errfile"
   else
-    wget -q -P bin "$gitbin"/kibrary-latest.jar 2>>"$errfile"
+    wget -q -O "$kibpath" "$KIBIN_URL" 2>>"$errfile"
   fi
+  __md5 "$kibpath"
+  exit 82
 fi 
 
-readonly KIBRARY=$(__readlink_f bin/kib*jar)
+__md5 "$(__readlink_f bin/kib*jar)"
 
 mv "$logfile" "$errfile" "$KIBRARY_HOME"
 
