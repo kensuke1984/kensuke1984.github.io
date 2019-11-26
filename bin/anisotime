@@ -1,10 +1,14 @@
 #!/bin/sh
 set -o posix
 
-anisotime_version='0.0.2'
+anisotime_version='0.0.3'
 
 if [ -z "$KIBRARY_HOME" ]; then
-  export KIBRARY_HOME="$(dirname "$(dirname "$("$(dirname "$(readlink "$0")")/readlink_f.sh" "$0")")")"
+  if readlink "$0" >/dev/null 2>&1; then
+    KIBRARY_HOME="$(dirname "$(dirname "$("$(dirname "$(readlink "$0")")/readlink_f.sh" "$0")")")"
+  else
+    KIBRARY_HOME="$(dirname "$(dirname "$0")")"
+  fi
   printf "KIBRARY_HOME is %s.\n" "$KIBRARY_HOME." 1>&2
 fi
 
