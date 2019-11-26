@@ -1,7 +1,7 @@
 #!/bin/sh
 set -o posix
 
-kibrth_version='0.0.1'
+kibrth_version='0.0.2'
 
 if [ -z "$KIBRARY_HOME" ]; then
   export KIBRARY_HOME="$(dirname "$(dirname "$("$(dirname "$(readlink "$0")")/readlink_f.sh" "$0")")")"
