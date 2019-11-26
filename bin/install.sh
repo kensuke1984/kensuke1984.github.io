@@ -2,7 +2,7 @@
 #set -e
 set -o posix
 
-install_version='0.1.2'
+install_version='0.1.2.1'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -93,7 +93,7 @@ if [ $downloader = "curl" ]; then
   curl -s -o bin/javaInstall "$gitbin"/javaInstall
   curl -s -o bin/anisotime "$gitbin"/anisotime
   curl -s -o bin/javaCheck.jar "$gitbin"/javaCheck.jar
-  curl -s -o bin/javaCheck.jar "$gitbin"/readlink_f.sh
+  curl -s -o bin/readlink_f.sh "$gitbin"/readlink_f.sh
 #  curl -s -o bin/.kibraryrc "$gitbin"/kibraryrc
   curl -s -o bin/kibrary_property "$gitbin"/kibrary_property
   curl -s -o bin/kibrary_operation "$gitbin"/kibrary_operation
