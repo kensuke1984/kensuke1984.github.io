@@ -4,7 +4,7 @@ set -o posix
 kibrth_version='0.0.1'
 
 if [ -z "$KIBRARY_HOME" ]; then
-  export KIBRARY_HOME=$(dirname "$(./readlink_f.sh "$(dirname $0)")")
+  export KIBRARY_HOME="$(dirname "$(dirname "$("$(dirname "$(readlink "$0")")/readlink_f.sh" "$0")")")"
   printf "KIBRARY_HOME is %s.\n" "$KIBRARY_HOME." 1>&2
 fi
 
