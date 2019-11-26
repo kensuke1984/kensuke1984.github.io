@@ -6,7 +6,7 @@ readonly KIBIN_URL='http://bit.ly/37wxazr'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logfile="$(pwd)/kinst.log"
 readonly errfile="$(pwd)/kinst.err"
-readonly install_version='0.1.3'
+readonly install_version='0.1.3.1'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -29,9 +29,9 @@ __readlink_f (){
 
 __md5 (){
   if command -v md5sum >/dev/null 2>&1; then
-    md5sum "$1" >>"$logfile"
+    md5sum "$@" >>"$logfile"
   elif command -v md5 >/dev/null 2>&1; then
-    md5 "$1" >>"$logfile"
+    md5 "$@" >>"$logfile"
   fi
 }
 
