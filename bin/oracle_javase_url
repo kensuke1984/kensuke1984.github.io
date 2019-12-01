@@ -1,5 +1,8 @@
 #!/bin/sh
-set -o posix
+if [ "$(readlink /bin/sh)" != "dash" ];then
+  set -o posix
+fi
+oju_version='0.0.1'
 usage_exit() {
   echo "Usage: $0 [-l] [-m] " 1>&2
   echo "Returns the install URL of Java from Oracle."

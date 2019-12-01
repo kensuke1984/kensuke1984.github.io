@@ -1,7 +1,9 @@
 #!/bin/sh
-set -o posix
+if [ "$(readlink /bin/sh)" != "dash" ];then
+  set -o posix
+fi
 
-anisotime_version='0.0.3'
+anisotime_version='0.0.4'
 
 if [ -z "$KIBRARY_HOME" ]; then
   if readlink "$0" >/dev/null 2>&1; then

@@ -1,7 +1,8 @@
 #!/bin/sh
-set -o posix
-
-check_version='0.1.1'
+if [ "$(readlink /bin/sh)" != "dash" ];then
+  set -o posix
+fi
+check_version='0.1.2'
 
 usage_exit() {
   echo "Usage: $0 [-i] [-r] [-p] [-l] [-k]" 1>&2

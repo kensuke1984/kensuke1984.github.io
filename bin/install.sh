@@ -1,12 +1,13 @@
 #!/bin/sh
-#set -e
-set -o posix
+if [ "$(readlink /bin/sh)" != "dash" ];then
+  set -o posix
+fi
 
 readonly KIBIN_URL='http://bit.ly/37wxazr'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logfile="$(pwd)/kinst.log"
 readonly errfile="$(pwd)/kinst.err"
-readonly install_version='0.1.3.1'
+readonly install_version='0.1.4'
 
 #Emulates readlink -f hoge
 __readlink_f (){

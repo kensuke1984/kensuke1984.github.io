@@ -1,6 +1,8 @@
 #!/bin/sh
-
-rl_f_version='0.0.1'
+if [ "$(readlink /bin/sh)" != "dash" ];then
+  set -o posix
+fi
+rlf_version='0.0.2'
 
 #Emulates readlink -f hoge
 TARGET_FILE=$1
