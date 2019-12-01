@@ -7,7 +7,7 @@ readonly KIBIN_URL='http://bit.ly/37wxazr'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logfile="$(pwd)/kinst.log"
 readonly errfile="$(pwd)/kinst.err"
-readonly install_version='0.1.4'
+readonly install_version='0.1.5'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -36,6 +36,9 @@ __md5 (){
   fi
 }
 
+__mvlog(){
+  mv "$logfile" "$errfile" "$KIBRARY_HOME"
+}
 
 touch $logfile $errfile
 echo "###install.sh stdout $install_version" >>$logfile
@@ -62,7 +65,7 @@ echo "downloader=$downloader" >>"$logfile"
 KIBRARY_HOME="$(__readlink_f "$KIBRARY_HOME")"
 printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn </dev/tty
-case "$yn" in [yY]*)  ;; *) echo "Installation cancelled."; exit ;; esac
+case "$yn" in [yY]*)  ;; *) echo "Installation cancelled. (1)"; exit 1;; esac
 
 echo "KIBRARY_HOME=$KIBRARY_HOME" >>$logfile
 
@@ -160,6 +163,7 @@ export JAVA JAVAC
 bin/javaCheck -r >>"$logfile" 2>>"$errfile"
 if [ $? -ge 20 ] ; then
   echo "Java is not found. ANISOtime installation cancelled. (71)" | tee -a "$errfile"
+  __mvlog
   exit 71
 fi
 
@@ -173,6 +177,7 @@ if [ $? -ge 20 ] ; then
     wget -q -O "$kibpath" "$KIBIN_URL"
   fi
   __md5 "$kibpath"
+  __mvlog
   exit 81
 fi
 
@@ -198,13 +203,13 @@ else
     wget -q -O "$kibpath" "$KIBIN_URL" 2>>"$errfile"
   fi
   __md5 "$kibpath"
+  __mvlog
   exit 82
 fi 
 
 __md5 "$(__readlink_f bin/kib*jar)"
 
-mv "$logfile" "$errfile" "$KIBRARY_HOME"
-
+__mvlog
 exit 0
 
 
