@@ -2,15 +2,17 @@
 if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
-kibration_version='0.0.4'
+kibration_version='0.1.0'
 
 if [ -z "$KIBRARY_HOME" ]; then
   if readlink "$0" >/dev/null 2>&1; then
     KIBRARY_HOME="$(dirname "$(dirname "$("$(dirname "$(readlink "$0")")/readlink_f.sh" "$0")")")"
+  elif [ "$(dirname "$0")" = "." ]; then
+    KIBRARY_HOME="$(dirname "$(pwd)")"
   else
     KIBRARY_HOME="$(dirname "$(dirname "$0")")"
   fi
-  printf "KIBRARY_HOME is %s.\n" "$KIBRARY_HOME." 1>&2
+  printf "KIBRARY_HOME is %s.\n" "$KIBRARY_HOME" 1>&2
 fi
 
 KIBRARY_BIN="$KIBRARY_HOME/bin"
@@ -18,14 +20,13 @@ KIBRARY=$(find "$KIBRARY_BIN" -type f -name 'kib*jar' | tail -n1)
 
 if [ -z "$JAVA" ]; then
   JAVA='java'
+  if ! command -v java; then
+    echo "JAVA is not set and PATH doesn't contain 'java'" 1>&2
+    exit 71
+  fi
   echo "JAVA is set to be 'java'. ($(command -v java))" 1>&2
 fi
-export JAVA
-
-if ! "$KIBRARY_BIN/javaCheck" -r >/dev/null 2>&1; then
-  "$KIBRARY_BIN/javaCheck"
-  exit 1
-fi
+export JAVA KIBRARY_HOME
 
 "$JAVA" -cp "$KIBRARY" io.github.kensuke1984.kibrary.Operation "$@"
 exit $?
