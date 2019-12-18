@@ -2,7 +2,7 @@
 if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
-kibration_version='0.1.0'
+kibration_version='0.1.1'
 
 if [ -z "$KIBRARY_HOME" ]; then
   if readlink "$0" >/dev/null 2>&1; then
@@ -20,7 +20,7 @@ KIBRARY=$(find "$KIBRARY_BIN" -type f -name 'kib*jar' | tail -n1)
 
 if [ -z "$JAVA" ]; then
   JAVA='java'
-  if ! command -v java; then
+  if ! command -v java >/dev/null 2>&1; then
     echo "JAVA is not set and PATH doesn't contain 'java'" 1>&2
     exit 71
   fi
