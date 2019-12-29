@@ -7,15 +7,13 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
 
-readonly install_version='0.2.0'
-readonly KIBIN_URL='https://bit.ly/37wxazr'
-readonly kibrary_jar='kibrary-0.4.5.jar'
-readonly KIBRARY_MASTER_ZIP='https://bit.ly/2qY5J0O'
+readonly install_version='0.2.1'
+readonly KIBIN_URL='https://bit.ly/2slieo4'
+readonly kibrary_jar='kibrary-0.4.7.jar'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logfile="$(pwd)/kinst.log"
 readonly errfile="$(pwd)/kinst.err"
-readonly githubio='https://kensuke1984.github.io'
-readonly gitbin="$githubio/bin"
+readonly gitbin='https://kensuke1984.github.io/bin'
 
 #Emulates readlink -f hoge
 __readlink_f (){
