@@ -7,9 +7,9 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
 
-readonly install_version='0.2.1'
-readonly KIBIN_URL='https://bit.ly/2slieo4'
-readonly kibrary_jar='kibrary-0.4.7.jar'
+readonly install_version='0.2.2'
+readonly KIBIN_URL='https://bit.ly/2U4zkBl'
+readonly kibrary_jar='kibrary-0.4.8.jar'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logfile="$(pwd)/kinst.log"
 readonly errfile="$(pwd)/kinst.err"
@@ -105,20 +105,6 @@ fi
 cd "$KIBRARY_HOME" || __unexpected_exit 3 "Could not cd to $KIBRARY_HOME. Installation failure."
 mkdir bin share
 export KIBRARY_HOME
-
-#catalog
-piac_html="https://bit.ly/2rnhOMS"
-catalog_zip=$(mktemp)
-mv "$catalog_zip" "$catalog_zip".zip
-catalog_zip="$catalog_zip.zip"
-if [ $downloader = "curl" ]; then
-  curl -sL -o "$catalog_zip" "$piac_html"
-else
-  wget -q -O "$catalog_zip" "$piac_html"
-fi
-(cd share && unzip -q "$catalog_zip" || __unexpected_exit 69 "Could not cd to share.")
-rm "$catalog_zip"
-__md5 share/*.cat
 
 #bin
 for binfile in anisotime readlink_f.sh kibrary_property kibrary_operation
