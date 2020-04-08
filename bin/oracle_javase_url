@@ -2,35 +2,27 @@
 if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
-oju_version='0.0.1'
+oju_version='0.14.0'
 usage_exit() {
   echo "Usage: $0 [-l] [-m] " 1>&2
   echo "Returns the install URL of Java from Oracle."
   echo "  -l Returns the URL for Linux."
   echo "  -m Returns the URL for macOS."
-  echo "  -v Sets the Java version (11~, deprecated, default: 13)"
   echo "If there is no option then the URL for this computer is returned."
   echo "Only one option can be used."
   exit 1
 }
 
-jdk_version='13'
+jdk_version='14'
 
-while getopts mlv: OPT
+while getopts ml: OPT
 do
   case $OPT in
     "m" ) readonly FLG_M="TRUE" ;;
     "l" ) readonly FLG_L="TRUE" ;;
-    "v" ) readonly FLG_V="TRUE" ; jdk_version="$OPTARG" ;;
     "?" ) usage_exit;;
   esac
 done
-
-if [ ! "$jdk_version" -eq '13' ] && [ ! "$jdk_version" -eq '11' ]; then
-  printf "It does not work for Java %s. For only 11 and 13 so far.\n" "$jdk_version"
-  exit 71
-fi
-
 
 if [ -n "$FLG_M" ] && [ -n "$FLG_L" ]; then
  echo " -l and -m can not be used simultaneously."
@@ -38,29 +30,20 @@ if [ -n "$FLG_M" ] && [ -n "$FLG_L" ]; then
 fi
 
 version_tag="a name=\"JDK$jdk_version\""
-baseurl='https://www.oracle.com/technetwork/java/javase/downloads'
+baseurl='https://www.oracle.com/java/technologies/javase-downloads.html'
+downloadpage='https://www.oracle.com/java/technologies/javase-jdk'$jdk_version'-downloads.html'
 
-if command -v wget >/dev/null 2>&1; then
-  line=$(wget -q -O - $baseurl/index.html | grep "JDK$jdk_version") 
-elif command -v curl >/dev/null 2>&1; then
-  line=$(curl -L -s $baseurl/index.html | grep "JDK$jdk_version")
-fi
-page=$(echo "$line" | perl -pe "s/.*?${version_tag} href=\"//" | perl -pe 's/html".+$/html/')
-#name=$(perl -pe 's/.*(Java SE 8u.+?)<.*/$1/' <<< $line)
-#version=$(awk '{print $3}' <<<$name)
-
-downloadpage="https://www.oracle.com$page"
 if command -v wget >/dev/null 2>&1; then
   downloaded=$(wget -q -O - "$downloadpage")
 elif command -v curl >/dev/null 2>&1; then
   downloaded=$(curl -s "$downloadpage")
 fi
 
-mac=$(echo "$downloaded" |\
-grep "macOS" | grep -E -o 'https.*dmg' | tail -1)
+mac="https:$(echo "$downloaded" |\
+grep "osx" | grep -E -o '//download\S*dmg' | tail -1)"
 
-linux=$(echo "$downloaded" |\
-grep "Linux" | grep -E -o 'https.*tar.gz' | tail -1)
+linux="https:$(echo "$downloaded" |\
+grep "linux" | grep -E -o '//download\S*tar.gz' | tail -1)"
 
 case $(uname) in
   "Linux" ) javaURL="$linux" ;;

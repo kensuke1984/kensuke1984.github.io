@@ -2,7 +2,7 @@
 if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
-check_version='0.1.2'
+check_version='0.14.0'
 
 usage_exit() {
   echo "Usage: $0 [-i] [-r] [-p] [-l] [-k]" 1>&2
@@ -81,6 +81,7 @@ jsp='https://javadl-esd-secure.oracle.com/update/baseline.version'
 
 latest_version_list=\
 $(curl -s -L $jsp)
+latest_java14_version=$(echo "$latest_version_list" | grep '^14')
 latest_java13_version=$(echo "$latest_version_list" | grep '^13')
 latest_java12_version=$(echo "$latest_version_list" | grep '^12')
 latest_java11_version=$(echo "$latest_version_list" | grep '^11')
@@ -154,13 +155,20 @@ case "$java_version" in
       exit 13
     fi      
     ;;
+#Java 14
+  14* )
+    if [ "$latest_java14_version" = "$java_version" ] || [ "$latest_java14_version" \< "$java_version" ]; then
+      print_set_java8
+      exit 0
+    else
+      printf "It's not latest. Please consider updating it to \\033[1;31m%s\\033[m. (13)\n" "$latest_java14_version"
+      exit 14
+    fi      
+    ;;
   * )
     printf "Installed Java version is \\033[1;31m%s\\033[m. You need \\033[4mJava 8\\033[m or later. (26)\\n" "$java_version"
     print_get_java
     exit 26
     ;;
 esac
-
-
-
 

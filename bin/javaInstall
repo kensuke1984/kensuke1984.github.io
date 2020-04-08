@@ -3,7 +3,7 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
 
-jinst_version=0.0.1
+jinst_version='0.14.0'
 
 usage_exit(){ 
   echo "Usage: $0 [-f][-h][-d dir]" 1>&2
@@ -11,27 +11,20 @@ usage_exit(){
   echo "  -d Install Java in '/path/to/dir/java'. Default is 'KIBRARY_HOME/java'."
   echo "  -f Install Java without any prompt."
   echo "  -h Show this message."
-  echo "  -v Sets version (deprecated, 12 or default:13)."
   exit 1
 }
 
-jdk_version=13
+jdk_version=14
 
-while getopts d:fhv: OPT
+while getopts d:fh OPT
 do
   case $OPT in
     "d" ) readonly FLG_D="TRUE" 
           readonly INSTALL_DIR=$OPTARG;;
     "f" ) readonly FLG_F="TRUE" ;;
-    "v" ) jdk_version=$OPTARG;;
     "h" ) usage_exit;;
   esac
 done
-
-if [ ! "$jdk_version" -eq '13' ] && [ ! "$jdk_version" -eq '12' ]; then
-  printf "It can not install Java %s. only 12 and 13 so far.\n" "$jdk_version"
-  exit 71
-fi
 
 if [ -z "$FLG_F" ]; then
   printf "Installing Java %s by Oracle in (%s/java)? (yes/No) " "$jdk_version" "$INSTALL_DIR"
@@ -51,7 +44,7 @@ else
   exit 2
 fi
 
-javaURL=$(oracle_javase_url -v "$jdk_version")
+javaURL=$(oracle_javase_url)
 cookie='Cookie: oraclelicense=accept-securebackup-cookie'
 
 if command -v wget >/dev/null 2>&1; then
