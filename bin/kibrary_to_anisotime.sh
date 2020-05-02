@@ -1,8 +1,8 @@
 #!/bin/sh
 
-k2a_version='0.0.1'
+k2a_version='0.0.2'
 cwd=$(pwd)
-file="$cwd/$1"
+file="$(readlink -f $1)"
 name="anisotime-1.3.7.jar"
 test -f "$file" || exit 71
 test -f "$name" && exit 2
