@@ -28,7 +28,7 @@ __readlink_f (){
     TARGET_FILE="$(readlink "$FILENAME")"
   done
   if [ "$FILENAME" = "." ]; then
-    echo "$(pwd -P)"
+    pwd -P
   else
     echo "$(pwd -P)/$FILENAME"
   fi
