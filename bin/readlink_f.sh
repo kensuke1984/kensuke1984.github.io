@@ -2,7 +2,7 @@
 if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
-rlf_version='0.0.2'
+rlf_version='0.0.3'
 
 #Emulates readlink -f hoge
 TARGET_FILE=$1
@@ -16,7 +16,7 @@ do
   TARGET_FILE="$(readlink "$FILENAME")"
 done
 if [ "$FILENAME" = "." ]; then
-  echo "$(pwd -P)"
+  pwd -P
 else
   echo "$(pwd -P)/$FILENAME"
 fi
