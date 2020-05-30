@@ -1,5 +1,5 @@
 #!/bin/sh
-#v0.0.3
+#v0.0.4
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -24,10 +24,16 @@ get_version (){
   java -cp "$1" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}'
 }
 
+anisotime_url='https://bit.ly/2XI9KT7'
+
 update (){
   tmpfile="$(mktemp)"
   kibin="$(dirname "$(__readlink_f "$0")")"
-  wget -q -O "$tmpfile" https://bit.ly/2XI9KT7
+  if command -v wget >/dev/null 2>&1; then
+    wget -q -O "$tmpfile" "$anisotime_url"
+  elif command -v curl >/dev/null 2>&1; then
+    curl -sL -o "$tmpfile" "$anisotime_url"
+  fi
   cloud_version=$(get_version "$tmpfile")
   local_version=$(get_version "$0")
   if [ "$local_version" \< "$cloud_version" ]; then
@@ -42,5 +48,4 @@ update (){
 java -cp "$0" io.github.kensuke1984.anisotime.ANISOtime "$@"
 update &
 exit $?
-
 
