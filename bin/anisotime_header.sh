@@ -1,5 +1,5 @@
 #!/bin/sh
-#v0.0.2
+#v0.0.3
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -39,8 +39,8 @@ update (){
   fi
 }
 
-update &
 java -cp "$0" io.github.kensuke1984.anisotime.ANISOtime "$@"
+update &
 exit $?
 
 
