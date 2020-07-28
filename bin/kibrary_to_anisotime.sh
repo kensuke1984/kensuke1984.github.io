@@ -1,6 +1,6 @@
 #!/bin/sh
 
-k2a_version='0.0.3'
+k2a_version='0.0.4'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -21,14 +21,28 @@ __readlink_f (){
   fi
 }
 
-cwd=$(pwd)
-file="$(__readlink_f $1)"
-if [ ! -f "$file" ]; then
-  printf "%s does not exist.\n" "$file" 1>&2
-  exit 71
+__show_usage_exit (){
+  printf 'Usage: %s /path/to/kibarary_jar\n' "$(basename "$0")"
+  exit 1
+}
+
+if [ -z $1 ]; then
+  __show_usage_exit
 fi
 
-anisotime_version=$(java -cp $file -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}')
+cwd=$(pwd)
+file="$(__readlink_f $1)"
+if [ -d "$file" ]; then
+  printf '%s is a directory.\n' "$file"
+  __show_usage_exit
+fi
+
+if [ ! -f "$file" ]; then
+  printf "%s does not exist.\n" "$file" 1>&2
+  __show_usage_exit
+fi
+
+anisotime_version=$(java -cp "$file" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}')
 name="anisotime-${anisotime_version%.*}.jar"
 if [ -f "$name" ]; then
   printf "%s already exists.\n" "$name" 1>&2

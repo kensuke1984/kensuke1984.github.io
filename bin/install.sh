@@ -7,9 +7,8 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
 
-readonly install_version='0.2.2'
-readonly KIBIN_URL='https://bit.ly/2U4zkBl'
-readonly kibrary_jar='kibrary-0.4.8.jar'
+readonly install_version='0.2.3'
+readonly KIBIN_URL='https://bit.ly/3f4gYrG'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logfile="$(pwd)/kinst.log"
 readonly errfile="$(pwd)/kinst.err"
@@ -47,24 +46,27 @@ __mvlog(){
 }
 
 __download_kibin(){
+  jar_tmp=$(mktemp)
   if [ $downloader = "curl" ]; then
-    curl -sL -o "$kibrary_jar" "$KIBIN_URL"
+    curl -sL -o "$jar_tmp" "$KIBIN_URL"
   else
-    wget -q -O "$kibrary_jar" "$KIBIN_URL"
+    wget -q -O "$jar_tmp" "$KIBIN_URL"
   fi
-  __md5 "$kibrary_jar" >>"$logfile"
+  __md5 "$jar_tmp" >>"$logfile"
+  version=$(java -cp "$jar_tmp" -Djava.awt.headless=true io.github.kensuke1984.kibrary.About | head -1 | awk '{print $2}')
+  mv "$jar_tmp" "kibrary-$version.jar"
 }
 
 __unexpected_exit(){
-  printf "$2 ($1)\n" | tee -a "$errfile"
+  printf '%s (%s)\n' "$2" "$1"| tee -a "$errfile"
   __mvlog
   exit $1
 }
 
-touch $logfile $errfile
-echo "###install.sh stdout $install_version" >>$logfile
-echo "###install.sh stderr $install_version" >>$errfile
-echo "PATH=$PATH" >>$logfile
+touch "$logfile" "$errfile"
+echo "###install.sh stdout $install_version" >>"$logfile"
+echo "###install.sh stderr $install_version" >>"$errfile"
+echo "PATH=$PATH" >>"$logfile"
 
 printf "Where would you like to install Kibrary? (%s) " "$DEFAULT_KIBRARY_HOME"
 read -r KIBRARY_HOME </dev/tty
@@ -88,7 +90,7 @@ printf "Installing in %s ... ok? (y/N) " "$KIBRARY_HOME"
 read -r yn </dev/tty
 case "$yn" in [yY]*)  ;; *) __unexpected_exit 1 "Installation cancelled.";; esac
 
-echo "KIBRARY_HOME=$KIBRARY_HOME" >>$logfile
+echo "KIBRARY_HOME=$KIBRARY_HOME" >>"$logfile"
 
 if [ ! -e "$KIBRARY_HOME" ]; then
   if ! mkdir -p "$KIBRARY_HOME" >>"$logfile" 2>>"$errfile"; then
@@ -117,7 +119,7 @@ do
   __md5 "bin/$binfile"
   chmod +x "bin/$binfile"
 done
-(cd bin && __download_kibin || __unexpected_exit 31 "Could not download the Kibrary.")
+(cd bin && __download_kibin || __unexpected_exit 31 "Could not download \\e[3mKibrary\\e[m.")
 __mvlog
 
 exit 0
