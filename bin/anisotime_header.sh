@@ -1,5 +1,5 @@
 #!/bin/sh
-#v0.0.4
+#v0.0.5
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -33,6 +33,8 @@ update (){
     wget -q -O "$tmpfile" "$anisotime_url"
   elif command -v curl >/dev/null 2>&1; then
     curl -sL -o "$tmpfile" "$anisotime_url"
+  else
+    return
   fi
   cloud_version=$(get_version "$tmpfile")
   local_version=$(get_version "$0")
@@ -40,6 +42,7 @@ update (){
     mv -f "$0" "$kibin/.anisotime_$local_version"
     mv "$tmpfile" "$kibin/anisotime"
     chmod +x "$kibin/anisotime"
+    printf '%s is updated.\n' "$kibin/anisotime" 1>&2
   else
     rm "$tmpfile"
   fi
