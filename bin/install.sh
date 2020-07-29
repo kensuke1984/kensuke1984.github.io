@@ -7,11 +7,12 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
 
-readonly install_version='0.2.3'
-readonly KIBIN_URL='https://bit.ly/3f4gYrG'
+readonly install_version='0.2.4'
+readonly KIBIN_URL='https://bit.ly/305JHrE'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
-readonly logfile="$(pwd)/kinst.log"
-readonly errfile="$(pwd)/kinst.err"
+readonly logdir="$(mktemp -d)"
+readonly logfile="$logdir/kinst.log"
+readonly errfile="$logdir/kinst.err"
 readonly gitbin='https://kensuke1984.github.io/bin'
 
 #Emulates readlink -f hoge
@@ -42,7 +43,7 @@ __md5 (){
 }
 
 __mvlog(){
-  mv "$logfile" "$errfile" "$KIBRARY_HOME"
+  mv "$logdir" "$KIBRARY_HOME/log"
 }
 
 __download_kibin(){
