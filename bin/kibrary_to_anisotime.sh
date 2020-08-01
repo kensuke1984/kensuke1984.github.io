@@ -1,6 +1,6 @@
 #!/bin/sh
 
-k2a_version='0.0.4'
+k2a_version='0.0.5'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -51,7 +51,7 @@ fi
 dir=$(mktemp -d)
 cd "$dir" || exit 1
 jar xf "$file"
-sed -i 's/kibrary.About/anisotime.ANISOtime/' META-INF/MANIFEST.MF
+sed -i.bak 's/kibrary.About/anisotime.ANISOtime/' META-INF/MANIFEST.MF
 jar cmf META-INF/MANIFEST.MF "$name" ./*
 mv "$name" "$cwd"
 rm -rf "$dir"
