@@ -1,5 +1,5 @@
 #!/bin/sh
-#v0.0.5
+#v0.0.6
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -20,35 +20,14 @@ __readlink_f (){
   fi
 }
 
-get_version (){
-  java -cp "$1" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}'
-}
-
-anisotime_url='https://bit.ly/2XI9KT7'
-
-update (){
-  tmpfile="$(mktemp)"
-  kibin="$(dirname "$(__readlink_f "$0")")"
-  if command -v wget >/dev/null 2>&1; then
-    wget -q -O "$tmpfile" "$anisotime_url"
-  elif command -v curl >/dev/null 2>&1; then
-    curl -sL -o "$tmpfile" "$anisotime_url"
-  else
-    return
-  fi
-  cloud_version=$(get_version "$tmpfile")
-  local_version=$(get_version "$0")
-  if [ "$local_version" \< "$cloud_version" ]; then
-    mv -f "$0" "$kibin/.anisotime_$local_version"
-    mv "$tmpfile" "$kibin/anisotime"
-    chmod +x "$kibin/anisotime"
-    printf '%s is updated.\n' "$kibin/anisotime" 1>&2
-  else
-    rm "$tmpfile"
-  fi
-}
+parent=$(dirname $(__readlink_f $0)) 
 
 java -cp "$0" io.github.kensuke1984.anisotime.ANISOtime "$@"
-update &
+
+if [ $? -eq 55 ]; then
+  mv "$parent/latest_anisotime" "$0"
+  exit 55
+fi
+
 exit $?
 
