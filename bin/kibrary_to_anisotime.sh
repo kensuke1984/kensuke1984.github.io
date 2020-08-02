@@ -1,6 +1,6 @@
 #!/bin/sh
 
-k2a_version='0.0.5'
+k2a_version='0.0.6'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -26,26 +26,30 @@ __show_usage_exit (){
   exit 1
 }
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
   __show_usage_exit
 fi
 
 cwd=$(pwd)
-file="$(__readlink_f $1)"
+file="$(__readlink_f "$1")"
 if [ -d "$file" ]; then
   printf '%s is a directory.\n' "$file"
   __show_usage_exit
 fi
 
 if [ ! -f "$file" ]; then
-  printf "%s does not exist.\n" "$file" 1>&2
+  printf '%s does not exist.\n' "$file" 1>&2
   __show_usage_exit
 fi
 
-anisotime_version=$(java -cp "$file" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}')
-name="anisotime-${anisotime_version%.*}.jar"
+if [ "$(basename "$file")" = "kibrary.jar" ]; then
+  name='anisotime.jar'
+else
+  anisotime_version=$(java -cp "$file" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}')
+  name="anisotime-${anisotime_version%.*}.jar"
+fi
 if [ -f "$name" ]; then
-  printf "%s already exists.\n" "$name" 1>&2
+  printf '%s already exists.\n' "$name" 1>&2
   exit 2
 fi
 dir=$(mktemp -d)
