@@ -1,5 +1,5 @@
 #!/bin/sh
-#v0.0.7
+# v0.0.8
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -27,6 +27,7 @@ java -cp "$0" io.github.kensuke1984.anisotime.ANISOtime "$@"
 if [ $? -eq 55 ]; then
   mv "$parent/latest_anisotime" "$0"
   chmod +x "$0"
+  java -cp "$0" io.github.kensuke1984.anisotime.ANISOtime "$@" & 
   exit 55
 fi
 
