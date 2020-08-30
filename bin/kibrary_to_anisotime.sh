@@ -1,6 +1,6 @@
 #!/bin/sh
 
-k2a_version='0.0.6'
+k2a_version='0.0.7'
 
 #Emulates readlink -f hoge
 __readlink_f (){
@@ -45,7 +45,7 @@ fi
 if [ "$(basename "$file")" = "kibrary.jar" ]; then
   name='anisotime.jar'
 else
-  anisotime_version=$(java -cp "$file" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About | head -1 | awk '{print $2}')
+  anisotime_version=$(java -cp "$file" -Djava.awt.headless=true io.github.kensuke1984.anisotime.About 2>&1 >/dev/null | head -1 | awk '{print $2}')
   name="anisotime-${anisotime_version%.*}.jar"
 fi
 if [ -f "$name" ]; then
