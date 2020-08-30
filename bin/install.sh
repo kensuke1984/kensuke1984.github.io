@@ -7,7 +7,7 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
   set -o posix
 fi
 
-readonly install_version='0.2.4'
+readonly install_version='0.2.5'
 readonly KIBIN_URL='https://bit.ly/31FkTrh'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logdir="$(mktemp -d)"
@@ -54,7 +54,7 @@ __download_kibin(){
     wget -q -O "$jar_tmp" "$KIBIN_URL"
   fi
   __md5 "$jar_tmp" >>"$logfile"
-  version=$(java -cp "$jar_tmp" -Djava.awt.headless=true io.github.kensuke1984.kibrary.About | head -1 | awk '{print $2}')
+  version=$(java -cp "$jar_tmp" -Djava.awt.headless=true io.github.kensuke1984.kibrary.About 2>&1 >/dev/null | head -1 | awk '{print $2}')
   mv "$jar_tmp" "kibrary-$version.jar"
 }
 
