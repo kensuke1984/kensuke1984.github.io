@@ -8,7 +8,7 @@ if [ "$(readlink /bin/sh)" != "dash" ];then
 fi
 
 readonly install_version='0.2.4'
-readonly KIBIN_URL='https://bit.ly/305JHrE'
+readonly KIBIN_URL='https://bit.ly/31FkTrh'
 readonly DEFAULT_KIBRARY_HOME="$HOME/Kibrary"
 readonly logdir="$(mktemp -d)"
 readonly logfile="$logdir/kinst.log"
